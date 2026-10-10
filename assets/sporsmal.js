@@ -7,7 +7,7 @@ PG8.CONFIG = {
   versjon: '1.0',
   utsendt: null,          // Dato meldingen sendes ut, f.eks. '2026-10-19'. Svarfrist og runde 2 regnes ut fra denne.
   svarfristDager: 7,      // Hver runde varer én uke
-  husstander: 24,         // TODO: riktig antall seksjoner
+  husstander: 10,         // Ti leiligheter
   minVisning: 5,          // Resultater vises først fra 5 svar (håndheves også i Apps Script)
   endpoint: '',           // Web app-URL fra Apps Script (slutter på /exec). Tom = prototype med eksempeldata.
   kontakt: '',             // E-post til styret, vises nederst på oversikten. Tom = skjules.
@@ -44,15 +44,20 @@ const BRUK_TORK = [
 PG8.AREALER = [
   { id: 'boder_kjeller', navn: 'Boder i underetasjen', kort: 'Boder', sted: 'Underetasje', ikon: 'bod', bruk: BRUK_BOD },
   { id: 'boder_loft', navn: 'Boder på loftet', kort: 'Loftsboder', sted: 'Loft', ikon: 'loftsbod', bruk: BRUK_BOD },
-  { id: 'vaskerom', navn: 'Vaskerommet', kort: 'Vaskerom', sted: 'Underetasje', ikon: 'vask', bruk: [
+  { id: 'vaskerom', navn: 'Vaskerommet', kort: 'Vaskerom', sted: 'Underetasje', ikon: 'vask',
+    info: 'Vaskemaskin som reserveres på tavla.',
+    problemerEkstra: [{ v: 'utstyr', l: 'Vaskemaskinen virker dårlig' }], bruk: [
     { v: 'klesvask', l: 'Vanlig klesvask' },
     { v: 'store', l: 'Vaske store ting (dyner, tepper)' },
-    { v: 'trommel', l: 'Tørketrommel' },
     { v: 'annet', l: 'Annet' }
   ] },
-  { id: 'torkerom_kjeller', navn: 'Tørkerommet i underetasjen', kort: 'Tørkerom u.etg.', sted: 'Underetasje', ikon: 'tork', bruk: BRUK_TORK },
-  { id: 'torkerom_loft', navn: 'Tørkerommet på loftet', kort: 'Tørkerom loft', sted: 'Loft', ikon: 'torkloft', bruk: BRUK_TORK },
-  { id: 'vedbod', navn: 'Vedboden', kort: 'Vedbod', sted: 'Underetasje', ikon: 'ved', bruk: [
+  { id: 'torkerom_kjeller', navn: 'Tørkerommet i underetasjen', kort: 'Tørkerom u.etg.', sted: 'Underetasje', ikon: 'tork', bruk: BRUK_TORK,
+    problemerEkstra: [{ v: 'snorer', l: 'For få eller dårlige tørkesnorer' }] },
+  { id: 'torkerom_loft', navn: 'Tørkerommet på loftet', kort: 'Tørkerom loft', sted: 'Loft', ikon: 'torkloft', bruk: BRUK_TORK,
+    info: 'Rom med tørkesnorer for å henge opp klær.',
+    problemerEkstra: [{ v: 'snorer', l: 'For få eller dårlige tørkesnorer' }] },
+  { id: 'vedbod', navn: 'Vedboden', kort: 'Vedbod', sted: 'Underetasje', ikon: 'ved',
+    hvorforIkkeEkstra: [{ v: 'ved_direkte', l: 'Jeg bærer veden rett opp i leiligheten' }], bruk: [
     { v: 'ved', l: 'Lagre ved til egen peis/ovn' },
     { v: 'annet', l: 'Annet' }
   ] },
@@ -79,7 +84,6 @@ PG8.HVORFOR_IKKE = [
   { v: 'visste_ikke', l: 'Visste ikke om det / vet ikke hvor det er' },
   { v: 'adkomst', l: 'Vanskelig å komme til (trapper, tunge dører)' },
   { v: 'tilstand', l: 'Det er i for dårlig stand' },
-  { v: 'utrygt', l: 'Føles utrygt eller ubehagelig' },
   { v: 'fullt', l: 'Det er fullt av andres ting' },
   { v: 'tilgang', l: 'Har ikke nøkkel eller tilgang' },
   { v: 'annet', l: 'Annet' }
@@ -100,8 +104,7 @@ PG8.PROBLEMER = [
   { v: 'plass', l: 'For lite plass' },
   { v: 'rot', l: 'Rot og gamle ting' },
   { v: 'skittent', l: 'Skittent' },
-  { v: 'utstyr', l: 'Utstyr virker dårlig' },
-  { v: 'utrygt', l: 'Utrygt eller dårlig låst' },
+  { v: 'las', l: 'Dårlig låst' },
   { v: 'adkomst', l: 'Vanskelig å komme til' },
   { v: 'ingen', l: 'Ingen problemer', eksklusiv: true }
 ];
@@ -114,7 +117,7 @@ PG8.VIKTIGHET = [
 
 PG8.BEHOV = [
   { id: 'oppbevaring', l: 'Mer oppbevaring / bodplass' },
-  { id: 'sykkel', l: 'Sykkelparkering innendørs' },
+  { id: 'sykkel', l: 'Sykkelparkering under tak' },
   { id: 'lading', l: 'Lading av elsykkel' },
   { id: 'barnevogn', l: 'Plass til barnevogn eller rullator' },
   { id: 'klesvask', l: 'Felles klesvask' },
@@ -143,16 +146,17 @@ PG8.ENDRING = [
 ];
 
 PG8.VEDLIKEHOLD = [
-  { v: 'fukt', l: 'Fukt i kjelleren' },
+  { v: 'vinduer', l: 'Utskifting av gamle vinduer' },
   { v: 'ventilasjon', l: 'Ventilasjon og lukt' },
   { v: 'lys', l: 'Belysning' },
   { v: 'las', l: 'Låser og sikkerhet' },
   { v: 'overflater', l: 'Maling, gulv og vegger' },
   { v: 'el', l: 'Elektrisk anlegg' },
-  { v: 'dorer', l: 'Dører og vinduer i fellesarealer' },
+  { v: 'dorer', l: 'Dører i fellesarealene' },
   { v: 'trapper', l: 'Trapper og rekkverk' },
   { v: 'rydding', l: 'Rydding og kasting av gamle ting' },
   { v: 'tilgjengelig', l: 'Bedre tilgjengelighet for de som går dårlig' },
+  { v: 'fuktsikring', l: 'Fuktsikring' },
   { v: 'annet', l: 'Annet' }
 ];
 
@@ -170,11 +174,15 @@ PG8.VIDERE = [
   { v: 'dugnad', l: 'Hjelpe til på dugnad' },
   { v: 'kontaktes', l: 'Bli kontaktet for en kort prat' }
 ];
-PG8.FORMAT = [
-  { v: 'digitalt', l: 'Digitalt skjema, som nå' },
-  { v: 'papir', l: 'På papir' },
-  { v: 'mote', l: 'På et møte i fellesarealet' }
-];
+
+/* Arealtilpassede lister: felles valg + det som bare gjelder ett areal (settes inn før «Annet»/«Ingen problemer») */
+function medEkstra(liste, ekstra, foran) {
+  if (!ekstra) return liste;
+  const i = liste.findIndex(function (x) { return x.v === foran; });
+  return liste.slice(0, i).concat(ekstra, liste.slice(i));
+}
+PG8.problemerFor = function (a) { return medEkstra(PG8.PROBLEMER, a.problemerEkstra, 'ingen'); };
+PG8.hvorforIkkeFor = function (a) { return medEkstra(PG8.HVORFOR_IKKE, a.hvorforIkkeEkstra, 'annet'); };
 
 /* ---------- Stegene ---------- */
 PG8.byggSteg = function () {
@@ -186,7 +194,7 @@ PG8.byggSteg = function () {
     id: 'om', tittel: 'Litt om deg', ingress: 'Dette hjelper oss å se om ulike beboere har ulike behov. Du er fortsatt anonym.',
     sporsmal: [
       { key: 'om.etasje', type: 'single', layout: 'rad', label: 'Hvilken etasje bor du i?', valg: [
-        { v: 'kjeller', l: 'U.etg.' }, { v: '1', l: '1' }, { v: '2', l: '2' }, { v: '3', l: '3' }, { v: '4', l: '4' }, { v: '5', l: '5+' }] },
+        { v: 'kjeller', l: 'U.etg.' }, { v: '1', l: '1. etg.' }, { v: '2', l: '2. etg.' }, { v: '3', l: '3. etg.' }] },
       { key: 'om.botid', type: 'single', layout: 'rad', label: 'Hvor lenge har du bodd her?', valg: [
         { v: '0-2', l: 'Under 2 år' }, { v: '2-5', l: '2–5 år' }, { v: '5-15', l: '5–15 år' }, { v: '15+', l: 'Over 15 år' }] },
       { key: 'om.alder', type: 'single', layout: 'rad', label: 'Hvor gammel er du?', valg: [
@@ -212,12 +220,12 @@ PG8.byggSteg = function () {
     const svart = function (s) { return s[k + 'frekvens'] !== undefined; };
     steg.push({
       id: a.id, areal: a, overtittel: 'Areal ' + (i + 1) + ' av ' + PG8.AREALER.length,
-      tittel: a.navn, sporsmal: [
+      tittel: a.navn, ingress: a.info, sporsmal: [
         { key: k + 'frekvens', type: 'single', label: 'Hvor ofte bruker du ' + a.navn.toLowerCase() + '?', valg: PG8.FREKVENS },
-        { key: k + 'hvorfor_ikke', type: 'multi', label: 'Hvorfor bruker du det ikke?', hjelp: 'Velg alt som passer.', valg: PG8.HVORFOR_IKKE, vis: aldri },
+        { key: k + 'hvorfor_ikke', type: 'multi', label: 'Hvorfor bruker du det ikke?', hjelp: 'Velg alt som passer.', valg: PG8.hvorforIkkeFor(a), vis: aldri },
         { key: k + 'bruk', type: 'multi', label: 'Hva bruker du det til?', hjelp: 'Velg alt som passer.', valg: a.bruk, vis: bruker },
         { key: k + 'tilstand', type: 'faces', label: 'Hvordan fungerer det i dag?', valg: PG8.TILSTAND, vis: bruker },
-        { key: k + 'problemer', type: 'multi', label: 'Er det noe som er dårlig?', hjelp: 'Velg alt som passer.', valg: PG8.PROBLEMER, vis: bruker },
+        { key: k + 'problemer', type: 'multi', label: 'Er det noe som er dårlig?', hjelp: 'Velg alt som passer.', valg: PG8.problemerFor(a), vis: bruker },
         { key: k + 'viktighet', type: 'single', layout: 'rad', label: 'Hvor viktig er dette arealet for deg?', valg: PG8.VIKTIGHET, vis: svart },
         { key: k + 'kommentar', type: 'text', label: 'Vil du si noe mer om ' + a.navn.toLowerCase() + '?', hjelp: 'Valgfritt. Ikke skriv navn på andre.', vis: svart }
       ]
@@ -260,8 +268,7 @@ PG8.byggSteg = function () {
     sporsmal: [
       { key: 'videre', type: 'multi', label: 'Vil du bidra?', hjelp: 'Helt frivillig.', valg: PG8.VIDERE },
       { key: 'kontakt', type: 'kontakt', label: 'Hvordan kan vi nå deg?', hjelp: 'Lagres for seg, og kobles ikke til svarene dine.',
-        vis: function (s) { return (s.videre || []).length > 0; } },
-      { key: 'format', type: 'multi', label: 'Hvordan vil du helst svare neste gang?', valg: PG8.FORMAT }
+        vis: function (s) { return (s.videre || []).length > 0; } }
     ]
   });
 

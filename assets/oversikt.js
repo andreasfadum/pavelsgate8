@@ -32,7 +32,7 @@
       '<div class="statuskort">' +
       '<div class="tall">' + (D.lastet && !D.feil ? D.n : '–') + ' <small>svar så langt</small></div>' +
       '<div class="svarbar" aria-hidden="true"><span style="width:' + andel + '%"></span></div>' +
-      '<p>Omtrent ' + andel + ' % av husstandene. Vi håper på minst 60 %.<br>Svarfrist: <b>' + esc(PG8.svarfristTekst()) + '</b></p>' +
+      '<p>Målet er at alle ti husstandene er med.<br>Svarfrist: <b>' + esc(PG8.svarfristTekst()) + '</b></p>' +
       (mitt ? '<span class="svart-merke">' + PG8.lite('hake').replace('<svg', '<svg style="width:1.1em;height:1.1em"') + 'Du har svart – takk!</span>' +
         '<a class="knapp" href="index.html">Svar for en annen i husstanden</a>'
         : '<a class="knapp" href="index.html">Svar på skjemaet ' + PG8.lite('pil') + '</a><span style="font-size:.85rem;opacity:.9">Tar ca. 10 minutter</span>') +
@@ -45,7 +45,7 @@
       { t: 'Kartlegging', d: dt ? dt.runde1 : 'Én uke', p: 'Hvordan brukes arealene, og hva trenger vi?' },
       { t: 'Innspill', d: dt ? dt.runde2 : 'Uken etter', p: 'Ny runde med mer konkrete spørsmål, bygget på svarene fra første runde.' },
       { t: 'Løsningsforslag', d: 'Dato kommer', p: '2–4 alternativer med pris, fordeler og ulemper.' },
-      { t: 'Avstemning', d: 'Dato kommer', p: 'Alle seksjoner stemmer på sitt foretrukne forslag.' },
+      { t: 'Avstemning', d: 'Dato kommer', p: 'Hver leilighet stemmer på sitt foretrukne forslag.' },
       { t: 'Årsmøtet', d: 'Vedtak', p: 'Formelt vedtak om plan for vedlikehold og oppgradering.' }
     ];
     return '<section class="seksjon" id="prosessen"><div class="seksjon-hode"><div><p class="etikett">Prosessen</p><h2>Fra spørsmål til vedtak</h2></div>' +
@@ -69,8 +69,8 @@
     h += '<div class="arealgrid">' + R.arealer.map(function (a) {
       const def = arealNavn[a.id];
       const r = rute(a);
-      const probl = a.problemer.slice(0, 3).map(function (p) { return '<span class="tag">' + esc(lbl(PG8.PROBLEMER, p.v)) + '</span>'; }).join('');
-      const hvorfor = a.hvorforIkke[0] && a.bruk < 50 ? '<p style="font-size:.85rem;color:var(--ink-2)">Vanligste grunn til å ikke bruke det: <b>' + esc(lbl(PG8.HVORFOR_IKKE, a.hvorforIkke[0].v).toLowerCase()) + '</b></p>' : '';
+      const probl = a.problemer.slice(0, 3).map(function (p) { return '<span class="tag">' + esc(lbl(PG8.problemerFor(def), p.v)) + '</span>'; }).join('');
+      const hvorfor = a.hvorforIkke[0] && a.bruk < 50 ? '<p style="font-size:.85rem;color:var(--ink-2)">Vanligste grunn til å ikke bruke det: <b>' + esc(lbl(PG8.hvorforIkkeFor(def), a.hvorforIkke[0].v).toLowerCase()) + '</b></p>' : '';
       return '<article class="kort arealkort">' +
         '<div class="topp-a"><span class="ai">' + PG8.ikon(def.ikon) + '</span><div><h3>' + esc(def.navn) + '</h3><span class="sted">' + esc(def.sted) + '</span></div></div>' +
         '<div class="maal">' +

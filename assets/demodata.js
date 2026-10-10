@@ -20,11 +20,11 @@
   const profil = {
     boder_kjeller:    { f: [1, 4, 5, 3, 0], t: [2, 5, 4, 2, 0], p: { fukt: .55, lys: .4, plass: .3, rot: .5 }, h: { tilstand: .5, ikke_behov: .5 }, b: { sesong: .7, sport: .5, sykkel: .3, dekk: .3, sjelden: .5 } },
     boder_loft:       { f: [3, 7, 3, 1, 0], t: [0, 2, 6, 4, 1], p: { kaldt: .3, adkomst: .45, rot: .35, lys: .3 }, h: { adkomst: .6, ikke_behov: .4 }, b: { sesong: .8, sjelden: .6, barn: .2 } },
-    vaskerom:         { f: [10, 2, 2, 4, 1], t: [3, 5, 3, 1, 0], p: { utstyr: .6, skittent: .35, fukt: .2 }, h: { har_eget: .9, tilstand: .2 }, b: { klesvask: .8, store: .5, trommel: .3 } },
-    torkerom_kjeller: { f: [7, 3, 4, 4, 1], t: [3, 6, 3, 1, 0], p: { fukt: .65, plass: .25, rot: .3, lys: .2 }, h: { har_eget: .6, tilstand: .35 }, b: { klaer: .8, store: .5, friluft: .3 } },
-    torkerom_loft:    { f: [12, 3, 2, 1, 0], t: [0, 2, 4, 3, 0], p: { adkomst: .6, kaldt: .3 }, h: { adkomst: .5, har_eget: .4, visste_ikke: .25 }, b: { store: .6, klaer: .5 } },
-    vedbod:           { f: [14, 3, 1, 1, 0], t: [0, 1, 3, 3, 1], p: { rot: .4 }, h: { ikke_behov: .9 }, b: { ved: .95 } },
-    redskapsbod:      { f: [8, 9, 2, 0, 0], t: [1, 4, 4, 2, 0], p: { rot: .55, utrygt: .2, lys: .25 }, h: { ikke_behov: .5, visste_ikke: .35, tilgang: .2 }, b: { snø: .5, dugnad: .6, hage: .4, verktoy: .3 } }
+    vaskerom:         { f: [10, 2, 2, 4, 1], t: [3, 5, 3, 1, 0], p: { utstyr: .6, skittent: .35, fukt: .2 }, h: { har_eget: .9, tilstand: .2 }, b: { klesvask: .8, store: .5 } },
+    torkerom_kjeller: { f: [7, 3, 4, 4, 1], t: [3, 6, 3, 1, 0], p: { fukt: .45, snorer: .3, plass: .25, rot: .3, lys: .2 }, h: { har_eget: .6, tilstand: .35 }, b: { klaer: .8, store: .5, friluft: .3 } },
+    torkerom_loft:    { f: [12, 3, 2, 1, 0], t: [0, 2, 4, 3, 0], p: { adkomst: .6, kaldt: .3, snorer: .25 }, h: { adkomst: .5, har_eget: .4, visste_ikke: .25 }, b: { store: .6, klaer: .5 } },
+    vedbod:           { f: [14, 3, 1, 1, 0], t: [0, 1, 3, 3, 1], p: { rot: .4 }, h: { ikke_behov: .6, ved_direkte: .5 }, b: { ved: .95 } },
+    redskapsbod:      { f: [8, 9, 2, 0, 0], t: [1, 4, 4, 2, 0], p: { rot: .55, las: .2, lys: .25 }, h: { ikke_behov: .5, visste_ikke: .35, tilgang: .2 }, b: { snø: .5, dugnad: .6, hage: .4, verktoy: .3 } }
   };
   const behovVekt = {
     oppbevaring: [1, 3, 6], sykkel: [2, 3, 6], lading: [4, 3, 3], barnevogn: [6, 2, 2], klesvask: [5, 3, 3],
@@ -56,7 +56,7 @@
     s.topp3 = viktige.sort(function () { return tilfeldig() - .5; }).slice(0, 3);
     s.endring = vekt([2, 6, 6, 3]) + 1;
     s.kostnad = ['0', '1-100', '100-300', '300-500', '500+', 'vet_ikke'][vekt([3, 5, 5, 2, 1, 2])];
-    s.vedlikehold = noen({ fukt: .7, ventilasjon: .45, lys: .55, las: .3, overflater: .35, el: .15, dorer: .2, trapper: .1, rydding: .6, tilgjengelig: .2 });
+    s.vedlikehold = noen({ vinduer: .65, fuktsikring: .3, ventilasjon: .45, lys: .55, las: .3, overflater: .35, el: .15, dorer: .2, trapper: .1, rydding: .6, tilgjengelig: .2 });
     svar.push(s);
   }
   PG8.DEMO_SVAR = svar;
