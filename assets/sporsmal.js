@@ -162,11 +162,10 @@ PG8.VEDLIKEHOLD = [
 
 PG8.KOSTNAD = [
   { v: '0', l: 'Ingen økning' },
-  { v: '1-100', l: 'Opptil 100 kr i måneden' },
-  { v: '100-300', l: '100–300 kr i måneden' },
-  { v: '300-500', l: '300–500 kr i måneden' },
-  { v: '500+', l: 'Mer enn 500 kr i måneden' },
-  { v: 'vet_ikke', l: 'Vet ikke' }
+  { v: '0-500', l: '0–500 kr i måneden' },
+  { v: '500-1000', l: '500–1000 kr i måneden' },
+  { v: '1000-2000', l: '1000–2000 kr i måneden' },
+  { v: '2000+', l: 'Over 2000 kr i måneden' }
 ];
 
 PG8.VIDERE = [
@@ -256,9 +255,15 @@ PG8.byggSteg = function () {
   });
 
   steg.push({
-    id: 'vedlikehold', tittel: 'Vedlikehold og kostnader', ingress: 'Bygningen trenger vedlikehold uansett. Styret lager en samlet plan til årsmøtet.',
+    id: 'vedlikehold', tittel: 'Vedlikehold', ingress: 'Bygningen trenger vedlikehold uansett. Styret lager en samlet plan til årsmøtet.',
     sporsmal: [
-      { key: 'vedlikehold', type: 'multi', label: 'Hva er viktigst å utbedre?', hjelp: 'Velg alt som passer.', valg: PG8.VEDLIKEHOLD },
+      { key: 'vedlikehold', type: 'multi', label: 'Hva er viktigst å utbedre?', hjelp: 'Velg alt som passer.', valg: PG8.VEDLIKEHOLD }
+    ]
+  });
+
+  steg.push({
+    id: 'kostnader', tittel: 'Felleskostnader', ingress: 'Vedlikehold og forbedringer koster penger. Svaret ditt hjelper oss å lage forslag i ulike prisklasser.',
+    sporsmal: [
       { key: 'kostnad', type: 'single', label: 'Hvor mye mer i felleskostnader ville du vært villig til å betale for bedre fellesarealer?', hjelp: 'Per husstand. Dette er ikke bindende – det hjelper oss å lage realistiske forslag.', valg: PG8.KOSTNAD }
     ]
   });

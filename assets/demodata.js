@@ -55,7 +55,7 @@
     const viktige = PG8.BEHOV.filter(function (b) { return s['behov.' + b.id] === 3; }).map(function (b) { return b.id; });
     s.topp3 = viktige.sort(function () { return tilfeldig() - .5; }).slice(0, 3);
     s.endring = vekt([2, 6, 6, 3]) + 1;
-    s.kostnad = ['0', '1-100', '100-300', '300-500', '500+', 'vet_ikke'][vekt([3, 5, 5, 2, 1, 2])];
+    s.kostnad = ['0', '0-500', '500-1000', '1000-2000', '2000+'][vekt([3, 6, 5, 2, 1])];
     s.vedlikehold = noen({ vinduer: .65, fuktsikring: .3, ventilasjon: .45, lys: .55, las: .3, overflater: .35, el: .15, dorer: .2, trapper: .1, rydding: .6, tilgjengelig: .2 });
     svar.push(s);
   }
