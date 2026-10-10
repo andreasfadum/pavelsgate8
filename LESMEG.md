@@ -25,7 +25,12 @@ Oppsett av regneark og Apps Script: se [../apps-script/OPPSETT.md](../apps-scrip
 
 1. Legg inn i `PG8.CONFIG` i `sporsmal.js`: `endpoint`, `husstander`, `kontakt`, `hjelp`.
 2. Sett `utsendt` til datoen meldingen sendes, f.eks. `'2026-10-19'`. Svarfrist (7 dager) og runde 2 regnes ut automatisk.
-3. Publiser mappen (GitHub Pages eller Netlify), og legg URL-en i meldingen.
+3. Publiser endringene (se under).
+
+## Publisering
+
+Nettsiden ligger på GitHub Pages: **https://andreasfadum.github.io/pavelsgate8/** (skjemaet) og **…/oversikt.html** (felles oversikt).
+Kode: https://github.com/andreasfadum/pavelsgate8. Endringer i denne mappen publiseres med `git commit` og `git push`; siden er oppdatert etter et par minutter.
 
 ## Ny runde
 
