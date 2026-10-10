@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Fellesarealene – spørreskjema | Pavels gate 8</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <a class="hopp" href="#hoved">Hopp til skjemaet</a>
+  <header class="topp">
+    <div class="topp-inner">
+      <a class="merke" href="oversikt.html" aria-label="Pavels gate 8 – til felles oversikt">
+        <span class="merke-ikon">P8</span>
+        <span>Pavels gate 8<small>Fellesarealene våre</small></span>
+      </a>
+      <div class="topp-hoyre">
+        <span class="tekstvalg-lbl" id="tekst-lbl">Tekst</span>
+        <div class="tekstvalg" role="group" aria-labelledby="tekst-lbl">
+          <button type="button" data-str="1" aria-label="Normal tekst">A</button>
+          <button type="button" data-str="2" aria-label="Større tekst">A</button>
+          <button type="button" data-str="3" aria-label="Størst tekst">A</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="hoved" class="skjema-wrap" tabindex="-1">
+    <div id="fremdrift"></div>
+    <div id="steg" aria-live="polite"></div>
+  </main>
+
+  <div class="sr" aria-hidden="true"><label for="hp">La dette feltet stå tomt</label><input id="hp" type="text" tabindex="-1" autocomplete="off"></div>
+
+  <nav class="navbar" id="navbar" aria-label="Navigasjon i skjemaet"></nav>
+
+  <script src="assets/sporsmal.js"></script>
+  <script src="assets/felles.js"></script>
+  <script src="assets/skjema.js"></script>
+</body>
+</html>
