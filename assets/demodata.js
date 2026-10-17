@@ -24,7 +24,9 @@
     torkerom_kjeller: { f: [7, 3, 4, 4, 1], t: [3, 6, 3, 1, 0], p: { fukt: .45, snorer: .3, plass: .25, rot: .3, lys: .2 }, h: { har_eget: .6, tilstand: .35 }, b: { klaer: .8, store: .5, friluft: .3 } },
     torkerom_loft:    { f: [12, 3, 2, 1, 0], t: [0, 2, 4, 3, 0], p: { adkomst: .6, kaldt: .3, snorer: .25 }, h: { adkomst: .5, har_eget: .4, visste_ikke: .25 }, b: { store: .6, klaer: .5 } },
     vedbod:           { f: [14, 3, 1, 1, 0], t: [0, 1, 3, 3, 1], p: { rot: .4 }, h: { ikke_behov: .6, ved_direkte: .5 }, b: { ved: .95 } },
-    redskapsbod:      { f: [8, 9, 2, 0, 0], t: [1, 4, 4, 2, 0], p: { rot: .55, las: .2, lys: .25 }, h: { ikke_behov: .5, visste_ikke: .35, tilgang: .2 }, b: { snø: .5, dugnad: .6, hage: .4, verktoy: .3 } }
+    redskapsbod:      { f: [8, 9, 2, 0, 0], t: [1, 4, 4, 2, 0], p: { rot: .55, las: .2, lys: .25 }, h: { ikke_behov: .5, visste_ikke: .35, tilgang: .2 }, b: { snø: .5, dugnad: .6, hage: .4, verktoy: .3 } },
+    loft_skratak:     { f: [9, 6, 2, 0, 0], t: [1, 3, 4, 2, 0], p: { adkomst: .5, lys: .4, rot: .3 }, h: { visste_ikke: .4, ikke_behov: .5 }, b: { sesong: .6, sjelden: .6, store: .3 } },
+    fyrrom:           { f: [11, 4, 2, 1, 0], t: [3, 4, 3, 1, 0], p: { rot: .5, lys: .4, fukt: .2 }, h: { visste_ikke: .5, tilgang: .4, ikke_behov: .3 }, b: { lagring: .5, felles: .5, sykkel: .2 } }
   };
   const behovVekt = {
     oppbevaring: [1, 3, 6], sykkel: [2, 3, 6], lading: [4, 3, 3], barnevogn: [6, 2, 2], klesvask: [5, 3, 3],
@@ -36,7 +38,6 @@
   for (let i = 0; i < 17; i++) {
     const s = { runde: 1, versjon: '1.0' };
     s['om.alder'] = ['-30', '30-49', '50-66', '67+'][vekt([3, 7, 4, 3])];
-    s['om.vaskemaskin'] = tilfeldig() < .75 ? 'ja' : 'nei';
     PG8.AREALER.forEach(function (a) {
       const p = profil[a.id], k = 'areal.' + a.id + '.';
       if (tilfeldig() < .06) return; // noen hopper over
@@ -55,8 +56,10 @@
     const viktige = PG8.BEHOV.filter(function (b) { return s['behov.' + b.id] === 3; }).map(function (b) { return b.id; });
     s.topp3 = viktige.sort(function () { return tilfeldig() - .5; }).slice(0, 3);
     s.endring = vekt([2, 6, 6, 3]) + 1;
+    s['ute.frekvens'] = vekt([2, 4, 4, 5, 2]);
+    s['ute.onsker'] = noen({ sittegrupper: .55, drivhus: .3, dyrking: .35, beplantning: .45, trening: .15, sykkel: .5, torkestativ: .3, grill: .35, lek: .2, lys: .3 });
     s.kostnad = ['0', '0-500', '500-1000', '1000-2000', '2000+'][vekt([3, 6, 5, 2, 1])];
-    s.vedlikehold = noen({ vinduer: .65, fuktsikring: .3, ventilasjon: .45, lys: .55, las: .3, overflater: .35, el: .15, dorer: .2, trapper: .1, rydding: .6, tilgjengelig: .2 });
+    s.vedlikehold = noen({ vinduer: .65, fasade: .5, isolasjon: .4, energi: .45, balkonger: .35, luftebalkonger: .2, fuktsikring: .3, ventilasjon: .45, lys: .55, las: .3, overflater: .35, el: .15, dorer: .2, trapper: .1, rydding: .6, tilgjengelig: .2 });
     svar.push(s);
   }
   PG8.DEMO_SVAR = svar;

@@ -18,7 +18,7 @@
     const mye = a.bruk >= 50, bra = a.tilstand >= 3;
     if (mye && !bra) return { navn: 'Utbedre først', cls: '' };
     if (mye && bra) return { navn: 'Ta vare på', cls: 'ok' };
-    if (!mye && !bra) return { navn: 'Vurdere ny bruk', cls: '' };
+    if (!mye && !bra) return { navn: 'Tilpasse bedre', cls: '' };
     return { navn: 'Gjøre bedre kjent', cls: 'ok' };
   }
 
@@ -35,7 +35,7 @@
       '<p>Målet er at alle ti husstandene er med.<br>Svarfrist: <b>' + esc(PG8.svarfristTekst()) + '</b></p>' +
       (mitt ? '<span class="svart-merke">' + PG8.lite('hake').replace('<svg', '<svg style="width:1.1em;height:1.1em"') + 'Du har svart – takk!</span>' +
         '<a class="knapp" href="index.html">Svar for en annen i husstanden</a>'
-        : '<a class="knapp" href="index.html">Svar på skjemaet ' + PG8.lite('pil') + '</a><span style="font-size:.85rem;opacity:.9">Tar ca. 10 minutter</span>') +
+        : '<a class="knapp" href="index.html">Svar på skjemaet ' + PG8.lite('pil') + '</a><span style="font-size:.85rem;opacity:.9">Tar ca. 15 minutter</span>') +
       '</div></section>';
   }
 
@@ -70,11 +70,14 @@
       const def = arealNavn[a.id];
       const r = rute(a);
       const probl = a.problemer.slice(0, 3).map(function (p) { return '<span class="tag">' + esc(lbl(PG8.problemerFor(def), p.v)) + '</span>'; }).join('');
-      const hvorfor = a.hvorforIkke[0] && a.bruk < 50 ? '<p style="font-size:.85rem;color:var(--ink-2)">Vanligste grunn til å ikke bruke det: <b>' + esc(lbl(PG8.hvorforIkkeFor(def), a.hvorforIkke[0].v).toLowerCase()) + '</b></p>' : '';
+      // Bare hindringer som kan gjøres noe med, vises offentlig – ikke «har ikke behov» o.l.
+      const hinder = a.hvorforIkke.filter(function (x) { return ['visste_ikke', 'adkomst', 'tilstand', 'fullt', 'tilgang'].indexOf(x.v) > -1; })[0];
+      const hvorfor = hinder ? '<p style="font-size:.85rem;color:var(--ink-2)">Det som oftest hindrer bruk: <b>' + esc(lbl(PG8.hvorforIkkeFor(def), hinder.v).toLowerCase()) + '</b></p>' : '';
       return '<article class="kort arealkort">' +
         '<div class="topp-a"><span class="ai">' + PG8.ikon(def.ikon) + '</span><div><h3>' + esc(def.navn) + '</h3><span class="sted">' + esc(def.sted) + '</span></div></div>' +
         '<div class="maal">' +
         '<span class="m-lbl">Bruker det</span><span class="m-verdi">' + a.bruk + ' %</span><div class="meter" aria-hidden="true"><span style="width:' + a.bruk + '%"></span></div>' +
+        (a.tilstandN ? '<span class="m-lbl">Svært viktig for dem som bruker det</span><span class="m-verdi">' + a.viktigBrukere + ' %</span>' : '') +
         '<span class="m-lbl">Fungerer</span><span class="m-verdi tilstand-vis">' + (a.tilstand != null ? PG8.fjes(a.tilstand) + komma(a.tilstand) + ' av 5' : '–') + '</span>' +
         '</div>' +
         (probl ? '<div><p style="font-size:.8rem;color:var(--muted);margin-bottom:.25rem">Vanligste problemer</p><div class="tags">' + probl + '</div></div>' : '') +
@@ -111,7 +114,7 @@
     s += '<text class="akse" transform="translate(14 ' + ((mt + H - mb) / 2) + ') rotate(-90)" text-anchor="middle" font-weight="700">Fungerer (1–5) →</text>';
     s += '<text class="rute-lbl" x="' + (x(0) + 8) + '" y="' + (y(5) + 18) + '">Gjøre bedre kjent</text>';
     s += '<text class="rute-lbl" x="' + (x(100) - 8) + '" y="' + (y(5) + 18) + '" text-anchor="end">Ta vare på</text>';
-    s += '<text class="rute-lbl" x="' + (x(0) + 8) + '" y="' + (y(1) - 10) + '">Vurdere ny bruk</text>';
+    s += '<text class="rute-lbl" x="' + (x(0) + 8) + '" y="' + (y(1) - 10) + '">Tilpasse bedre</text>';
     s += '<text class="rute-lbl" x="' + (x(100) - 8) + '" y="' + (y(1) - 10) + '" text-anchor="end">Utbedre først</text>';
     // punkter med enkel kollisjonshåndtering for etiketter
     // hindringer: alle punktene + etiketter som allerede er plassert
@@ -144,7 +147,7 @@
       '<div class="forklaring">' +
       '<div><b>Utbedre først</b>Mange bruker det, men det fungerer dårlig.</div>' +
       '<div><b>Ta vare på</b>Mye brukt og fungerer bra.</div>' +
-      '<div><b>Vurdere ny bruk</b>Lite brukt og fungerer dårlig. Kan få nytt formål.</div>' +
+      '<div><b>Tilpasse bedre</b>Fungerer dårlig for dem som bruker det. Hva skal til for at rommet fungerer bedre?</div>' +
       '<div><b>Gjøre bedre kjent</b>Fungerer bra, men få bruker det.</div></div>' +
       '<details class="tabell"><summary>Vis som tabell</summary><table><thead><tr><th>Areal</th><th>Bruker det</th><th>Fungerer (1–5)</th><th>Svar</th></tr></thead><tbody>' +
       R.arealer.map(function (a) {
@@ -170,8 +173,30 @@
   function feltNavn(felt) {
     if (felt === 'ide') return 'Idé til bedre bruk';
     if (felt === 'fritt') return 'Annet innspill';
+    if (/^ute\./.test(felt || '')) return 'Utearealene';
     const m = /^areal\.([^.]+)\./.exec(felt || '');
     return m && arealNavn[m[1]] ? arealNavn[m[1]].navn : 'Innspill';
+  }
+
+  function ute() {
+    let h = '<section class="seksjon" id="ute"><div class="seksjon-hode"><div><p class="etikett">Utearealene</p><h2>Ønsker for hagen og gården</h2></div>' +
+      '<p>Andel som ønsker hvert tilbud i utearealene.</p></div>';
+    if (!nok) return h + venter() + '</section>';
+    const U = R.ute || { frekvens: {}, onsker: {}, n: 0 };
+    const liste = PG8.UTE_ONSKER.filter(function (o) { return !o.eksklusiv && o.v !== 'annet'; })
+      .map(function (o) { return { v: o.v, l: o.l, n: U.onsker[o.v] || 0 }; })
+      .sort(function (a, b) { return b.n - a.n; });
+    const maks = liste[0] && liste[0].n ? liste[0].n : 1;
+    const ukentlig = (U.frekvens[3] || 0) + (U.frekvens[4] || 0);
+    const fornoyd = U.onsker.fornoyd || 0;
+    h += '<div class="kort"><div class="stolper">' + liste.map(function (x) {
+      const p = Math.round(100 * x.n / D.n);
+      return '<div class="stolpe" tabindex="0" data-tip="<b>' + esc(x.l) + '</b>' + x.n + ' av ' + D.n + ' svar"><span class="s-lbl">' + esc(x.l) + '</span>' +
+        '<span class="s-spor"><span class="s-bane"><span class="s-fyll" style="width:' + Math.max(1, 100 * x.n / maks) + '%"></span></span><span class="s-verdi">' + p + ' %</span></span></div>';
+    }).join('') + '</div>' +
+      '<p style="font-size:.88rem;color:var(--ink-2);margin-top:1rem">' + Math.round(100 * ukentlig / D.n) + ' % bruker utearealene hver uke eller oftere i sommerhalvåret.' +
+      (fornoyd ? ' ' + fornoyd + ' er fornøyd slik det er.' : '') + '</p></div></section>';
+    return h;
   }
 
   function sitater() {
@@ -274,7 +299,7 @@
   }
 
   function tegnSide() {
-    document.getElementById('hoved').innerHTML = hero() + prosess() + arealer() + mulighetskart() + behov() + sitater() + holdninger() + vedlikehold() + faq();
+    document.getElementById('hoved').innerHTML = hero() + prosess() + arealer() + mulighetskart() + behov() + ute() + sitater() + holdninger() + vedlikehold() + faq();
   }
 
   document.getElementById('demo-band').hidden = !!C.endpoint;

@@ -30,6 +30,7 @@ function aggreger(svar) {
     var jevnlig = besvart.filter(function (s) { return s[k + 'frekvens'] >= 2; });
     var tilst = brukere.map(function (s) { return s[k + 'tilstand']; }).filter(function (v) { return typeof v === 'number'; });
     var vikt = besvart.map(function (s) { return s[k + 'viktighet']; }).filter(function (v) { return typeof v === 'number'; });
+    var viktBrukere = brukere.map(function (s) { return s[k + 'viktighet']; }).filter(function (v) { return typeof v === 'number'; });
     return {
       id: id,
       n: besvart.length,
@@ -38,6 +39,7 @@ function aggreger(svar) {
       tilstand: tilst.length ? tilst.reduce(function (a, b) { return a + b; }, 0) / tilst.length : null,
       tilstandN: tilst.length,
       viktig: pros(vikt.filter(function (v) { return v === 3; }).length, vikt.length),
+      viktigBrukere: pros(viktBrukere.filter(function (v) { return v === 3; }).length, viktBrukere.length),
       problemer: sorter(tell(brukere.map(function (s) {
         return (s[k + 'problemer'] || []).filter(function (p) { return p !== 'ingen'; });
       }))),
@@ -52,11 +54,13 @@ function aggreger(svar) {
     return { id: id, n: v.length, svaertViktig: pros(v.filter(function (x) { return x === 3; }).length, v.length), topp3: topp[id] || 0 };
   }).sort(function (a, b) { return b.svaertViktig - a.svaertViktig || b.topp3 - a.topp3; });
 
-  var endring = {}, kostnad = {};
+  var endring = {}, kostnad = {}, uteFrekvens = {};
   svar.forEach(function (s) {
     if (s.endring !== undefined) endring[s.endring] = (endring[s.endring] || 0) + 1;
     if (s.kostnad !== undefined) kostnad[s.kostnad] = (kostnad[s.kostnad] || 0) + 1;
+    if (s['ute.frekvens'] !== undefined) uteFrekvens[s['ute.frekvens']] = (uteFrekvens[s['ute.frekvens']] || 0) + 1;
   });
+  var uteBesvart = svar.filter(function (s) { return (s['ute.onsker'] || []).length; }).length;
 
   return {
     n: n,
@@ -64,6 +68,7 @@ function aggreger(svar) {
     behov: behov,
     endring: endring,
     kostnad: kostnad,
-    vedlikehold: tell(svar.map(function (s) { return s.vedlikehold; }))
+    vedlikehold: tell(svar.map(function (s) { return s.vedlikehold; })),
+    ute: { frekvens: uteFrekvens, onsker: tell(svar.map(function (s) { return s['ute.onsker']; })), n: uteBesvart }
   };
 }

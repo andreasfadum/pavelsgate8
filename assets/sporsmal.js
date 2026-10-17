@@ -21,6 +21,8 @@ PG8.IKON = {
   tork: '<path d="M2 4h20"/><path d="M8.5 4 4 7.5l2 2.5 1.5-1V20h9V9l1.5 1 2-2.5L15.5 4c-.8 1.6-6.2 1.6-7 0z"/>',
   torkloft: '<path d="M2 10 12 3l10 7"/><path d="M9.5 10 6.5 12l1.4 1.8 1-.6V20h6.2v-6.8l1 .6 1.4-1.8-3-2c-.6 1-4.4 1-5 0z"/>',
   ved: '<circle cx="7" cy="16.5" r="3.5"/><circle cx="17" cy="16.5" r="3.5"/><circle cx="12" cy="9" r="3.5"/><circle cx="7" cy="16.5" r=".8"/><circle cx="17" cy="16.5" r=".8"/><circle cx="12" cy="9" r=".8"/>',
+  fyrrom: '<rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M8 6h8"/><path d="M12 18c-1.8 0-3-1.2-3-2.8 0-1.7 1.5-2.6 1.7-4.4 1 .7 1.6 1.6 1.7 2.4.4-.4.7-1.1.7-1.8 1.2.9 1.9 2.2 1.9 3.6 0 1.7-1.2 3-3 3z"/>',
+  skratak: '<path d="M2 20.5h20"/><path d="M4 20.5 14.5 5H21v15.5"/><rect x="11" y="15" width="5" height="5.5" rx=".6"/><rect x="15.5" y="10.5" width="4" height="4.5" rx=".6"/>',
   redskap: '<path d="M20.5 3.5 11 13"/><path d="M11 13 7.5 9.5 3 14l2 5 5 2 4.5-4.5z"/><path d="M18 2l4 4"/>'
 };
 
@@ -44,8 +46,15 @@ const BRUK_TORK = [
 PG8.AREALER = [
   { id: 'boder_kjeller', navn: 'Boder i underetasjen', kort: 'Boder', sted: 'Underetasje', ikon: 'bod', bruk: BRUK_BOD },
   { id: 'boder_loft', navn: 'Boder på loftet', kort: 'Loftsboder', sted: 'Loft', ikon: 'loftsbod', bruk: BRUK_BOD },
+  { id: 'loft_skratak', navn: 'Lagringsarealet under skråtaket på loftet', kort: 'Skråtak loft', sted: 'Loft', ikon: 'skratak', bruk: [
+    { v: 'sesong', l: 'Sesongting (jul, klær)' },
+    { v: 'sport', l: 'Sport og friluft' },
+    { v: 'sjelden', l: 'Ting jeg sjelden bruker' },
+    { v: 'store', l: 'Store ting som ikke får plass i boden' },
+    { v: 'annet', l: 'Annet' }
+  ] },
   { id: 'vaskerom', navn: 'Vaskerommet', kort: 'Vaskerom', sted: 'Underetasje', ikon: 'vask',
-    info: 'Vaskemaskin som reserveres på tavla.',
+    info: 'Vaskemaskin som reserveres på tavla. Vi spør for å finne ut hvordan vaskeriet kan fungere best mulig for dem som bruker det.',
     problemerEkstra: [{ v: 'utstyr', l: 'Vaskemaskinen virker dårlig' }], bruk: [
     { v: 'klesvask', l: 'Vanlig klesvask' },
     { v: 'store', l: 'Vaske store ting (dyner, tepper)' },
@@ -66,6 +75,13 @@ PG8.AREALER = [
     { v: 'snø', l: 'Snømåking og strøing' },
     { v: 'dugnad', l: 'Dugnad' },
     { v: 'verktoy', l: 'Låne verktøy' },
+    { v: 'annet', l: 'Annet' }
+  ] },
+  { id: 'fyrrom', navn: 'Det gamle fyrrommet i kjelleren', kort: 'Gammelt fyrrom', sted: 'Underetasje', ikon: 'fyrrom', bruk: [
+    { v: 'lagring', l: 'Lagring av egne ting' },
+    { v: 'sykkel', l: 'Sykkel' },
+    { v: 'barn', l: 'Barnevogn / barneutstyr' },
+    { v: 'felles', l: 'Felles utstyr og dugnad' },
     { v: 'annet', l: 'Annet' }
   ] }
 ];
@@ -116,7 +132,7 @@ PG8.VIKTIGHET = [
 ];
 
 PG8.BEHOV = [
-  { id: 'oppbevaring', l: 'Mer oppbevaring / bodplass' },
+  { id: 'oppbevaring', l: 'Privat bodplass og lagring' },
   { id: 'sykkel', l: 'Sykkelparkering under tak' },
   { id: 'lading', l: 'Lading av elsykkel' },
   { id: 'barnevogn', l: 'Plass til barnevogn eller rullator' },
@@ -138,15 +154,42 @@ PG8.BEHOV_SKALA = [
   { v: 3, l: 'Svært viktig' }
 ];
 
+PG8.UTE_FREKVENS = [
+  { v: 0, l: 'Aldri' },
+  { v: 1, l: 'Noen ganger i sesongen' },
+  { v: 2, l: 'Omtrent hver måned' },
+  { v: 3, l: 'Hver uke' },
+  { v: 4, l: 'Flere ganger i uka' }
+];
+PG8.UTE_ONSKER = [
+  { v: 'sittegrupper', l: 'Flere sittegrupper' },
+  { v: 'drivhus', l: 'Minidrivhus' },
+  { v: 'dyrking', l: 'Dyrkekasser / kjøkkenhage' },
+  { v: 'beplantning', l: 'Mer beplantning og blomster' },
+  { v: 'trening', l: 'Treningsapparater' },
+  { v: 'sykkel', l: 'Sykkelparkering' },
+  { v: 'torkestativ', l: 'Tørkestativ' },
+  { v: 'grill', l: 'Grillplass' },
+  { v: 'lek', l: 'Lek for barn' },
+  { v: 'lys', l: 'Bedre belysning ute' },
+  { v: 'annet', l: 'Annet' },
+  { v: 'fornoyd', l: 'Jeg er fornøyd slik det er', eksklusiv: true }
+];
+
 PG8.ENDRING = [
   { v: 1, l: 'Behold som i dag', h: 'Jeg er fornøyd slik det er' },
   { v: 2, l: 'Små forbedringer', h: 'Rydde, male, bedre lys' },
-  { v: 3, l: 'Åpen for større endringer', h: 'Noen rom kan få ny bruk' },
-  { v: 4, l: 'Ønsker store endringer', h: 'Tenk nytt om hele kjelleren og loftet' }
+  { v: 3, l: 'Større oppgradering', h: 'Tilpasse rommene bedre, og kanskje flytte noen funksjoner' },
+  { v: 4, l: 'Tenke helhetlig', h: 'Se kjelleren og loftet under ett, og organisere rommene på nytt' }
 ];
 
 PG8.VEDLIKEHOLD = [
   { v: 'vinduer', l: 'Utskifting av gamle vinduer' },
+  { v: 'fasade', l: 'Fasade' },
+  { v: 'isolasjon', l: 'Isolasjon' },
+  { v: 'energi', l: 'Energieffektivisering' },
+  { v: 'balkonger', l: 'Balkonger' },
+  { v: 'luftebalkonger', l: 'Luftebalkonger' },
   { v: 'ventilasjon', l: 'Ventilasjon og lukt' },
   { v: 'lys', l: 'Belysning' },
   { v: 'las', l: 'Låser og sikkerhet' },
@@ -203,10 +246,6 @@ PG8.byggSteg = function () {
         { v: 'ungdom', l: 'Ungdom 13–19' }, { v: 'dyr', l: 'Kjæledyr' }] },
       { key: 'om.eier', type: 'single', layout: 'rad', label: 'Eier eller leier du?', valg: [
         { v: 'eier', l: 'Eier' }, { v: 'leier', l: 'Leier' }] },
-      { key: 'om.vaskemaskin', type: 'single', layout: 'rad', label: 'Har du vaskemaskin i leiligheten?', valg: [
-        { v: 'ja', l: 'Ja' }, { v: 'nei', l: 'Nei' }] },
-      { key: 'om.torketrommel', type: 'single', layout: 'rad', label: 'Har du tørketrommel eller tørkeskap i leiligheten?', valg: [
-        { v: 'ja', l: 'Ja' }, { v: 'nei', l: 'Nei' }] },
       { key: 'om.peis', type: 'single', layout: 'rad', label: 'Har du peis eller vedovn?', valg: [
         { v: 'ja', l: 'Ja' }, { v: 'nei', l: 'Nei' }] }
     ]
@@ -247,6 +286,15 @@ PG8.byggSteg = function () {
   });
 
   steg.push({
+    id: 'ute', tittel: 'Utearealene', ingress: 'Forhagen, bakgården og de andre utearealene rundt huset.',
+    sporsmal: [
+      { key: 'ute.frekvens', type: 'single', label: 'Hvor ofte bruker du utearealene i sommerhalvåret?', valg: PG8.UTE_FREKVENS },
+      { key: 'ute.onsker', type: 'multi', label: 'Ønsker du flere eller andre tilbud i utearealene?', hjelp: 'Velg alt som passer.', valg: PG8.UTE_ONSKER },
+      { key: 'ute.kommentar', type: 'text', label: 'Har du andre ønsker eller ideer for utearealene?', hjelp: 'Valgfritt.' }
+    ]
+  });
+
+  steg.push({
     id: 'endring', tittel: 'Endring', ingress: 'Det finnes ingen riktige svar her.',
     sporsmal: [
       { key: 'endring', type: 'single', label: 'Hvor åpen er du for å endre bruken av fellesarealene?', valg: PG8.ENDRING },
@@ -255,9 +303,9 @@ PG8.byggSteg = function () {
   });
 
   steg.push({
-    id: 'vedlikehold', tittel: 'Vedlikehold', ingress: 'Bygningen trenger vedlikehold uansett. Styret lager en samlet plan til årsmøtet.',
+    id: 'vedlikehold', tittel: 'Vedlikehold og oppgradering', ingress: 'Bygningen trenger vedlikehold uansett. Styret lager en samlet plan til årsmøtet.',
     sporsmal: [
-      { key: 'vedlikehold', type: 'multi', label: 'Hva er viktigst å utbedre?', hjelp: 'Velg alt som passer.', valg: PG8.VEDLIKEHOLD }
+      { key: 'vedlikehold', type: 'multi', label: 'Hva mener du er viktigst å utbedre eller oppgradere?', hjelp: 'Velg alt som passer.', valg: PG8.VEDLIKEHOLD }
     ]
   });
 

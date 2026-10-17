@@ -110,9 +110,9 @@
         ' Du har allerede svart fra denne enheten – takk! Andre i husstanden kan gjerne svare også.</p>' : '') +
       '<p class="overtittel">Fra styret · Runde 1</p>' +
       '<h1 tabindex="-1" style="margin-top:.4rem">Hvordan vil vi bruke fellesarealene?</h1>' +
-      '<p class="ingress">Vi vil vite hvordan du bruker kjelleren og loftet i dag, og hva du trenger. Svarene dine blir grunnlaget for konkrete forslag som alle får stemme over før årsmøtet.</p>' +
+      '<p class="ingress">Vi vil vite hvordan du bruker kjelleren, loftet og utearealene i dag, og hva du trenger. Målet er å tilpasse rommene bedre til det vi bruker dem til. Svarene dine blir grunnlaget for konkrete forslag som alle får stemme over før årsmøtet.</p>' +
       '<ul class="fakta">' +
-      '<li><span class="fi">' + PG8.lite('klokke') + '</span><span><b>Ca. 10 minutter</b><span>Ett tema om gangen. Du kan gå tilbake når som helst.</span></span></li>' +
+      '<li><span class="fi">' + PG8.lite('klokke') + '</span><span><b>Ca. 15 minutter</b><span>Ett tema om gangen. Du kan gå tilbake når som helst.</span></span></li>' +
       '<li><span class="fi">' + PG8.lite('lås') + '</span><span><b>Anonymt</b><span>Vi spør ikke om navn. Ingen spørsmål er obligatoriske.</span></span></li>' +
       '<li><span class="fi">' + PG8.lite('pause') + '</span><span><b>Lagres underveis</b><span>Lukker du siden, kan du fortsette senere på samme enhet.</span></span></li>' +
       '</ul>' +
