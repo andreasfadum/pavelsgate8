@@ -5,7 +5,8 @@
   PG8.initTekst();
 
   const mittLagret = PG8.hent('pg8.r' + C.runde + '.sendt');
-  const mitt = mittLagret ? (mittLagret.data || mittLagret) : null;
+  const mineSvar = !mittLagret ? [] : Array.isArray(mittLagret) ? mittLagret.map(function (x) { return x.data; }) : [mittLagret.data || mittLagret];
+  const mitt = mineSvar.length ? mineSvar[mineSvar.length - 1] : null;
   let D = { n: 0, sitater: [], vedlikehold: [] };  // svaret fra doGet
   let R = null;    // D.resultat, sortert og med tekster
   let nok = false;
@@ -28,7 +29,7 @@
     return '<section class="o-hero">' +
       '<div><p class="etikett">Medvirkning · Runde ' + C.runde + '</p>' +
       '<h1>Vi planlegger fellesarealene sammen</h1>' +
-      '<p class="ingress">Her ser du hvordan prosessen går, hva beboerne har svart så langt, og hva som skjer videre. Alt er anonymt – vi viser bare samlede tall.</p></div>' +
+      '<p class="ingress">Her ser du hvordan prosessen går og hva som skjer videre. Når svarfristen er ute, kommer de samlede resultatene her. Alt er anonymt – vi viser bare samlede tall.</p></div>' +
       '<div class="statuskort">' +
       '<div class="tall">' + (D.lastet && !D.feil ? D.n : '–') + ' <small>svar så langt</small></div>' +
       '<div class="svarbar" aria-hidden="true"><span style="width:' + andel + '%"></span></div>' +
@@ -59,6 +60,7 @@
   function venter() {
     if (!D.lastet) return '<div class="kort venter">Henter resultater …</div>';
     if (D.feil) return '<div class="kort venter">Resultatene kunne ikke hentes akkurat nå. Prøv å laste siden på nytt om litt.</div>';
+    if (D.skjultTil) return '<div class="kort venter">Resultatene vises når svarfristen er ute, ' + esc(PG8.svarfristTekst()) + '. Da kan ingen se hvordan andre har svart mens skjemaet er åpent.</div>';
     return '<div class="kort venter">Resultatene vises når minst ' + C.minVisning + ' har svart, slik at ingen kan kjennes igjen. Så langt har ' + D.n + ' svart.</div>';
   }
 
@@ -305,7 +307,7 @@
 
   function faq() {
     const q = [
-      ['Er svarene anonyme?', 'Ja. Skjemaet spør ikke om navn eller leilighetsnummer. Vil du delta videre, kan du oppgi kontaktinfo – den lagres for seg og kobles ikke til svarene dine. Her på siden vises bare samlede tall, og bare når minst ' + C.minVisning + ' har svart.'],
+      ['Er svarene anonyme?', 'Ja. Skjemaet spør ikke om navn eller leilighetsnummer. Vil du delta videre, kan du oppgi kontaktinfo – den lagres for seg og kobles ikke til svarene dine. Her på siden vises bare samlede tall, og først når svarfristen er ute. Før det kan ingen se hvordan andre har svart.'],
       ['Hvem kan se svarene?', 'Styret har tilgang til alle enkeltsvar, for å kunne lage neste runde. Alle beboere kan se de samlede resultatene her. Svarene slettes når prosessen er ferdig etter årsmøtet.'],
       ['Jeg vil heller svare på papir, eller trenger hjelp', 'Det går helt fint. Kontakt ' + esc(C.hjelp) + ', så får du et papirskjema eller hjelp til å fylle ut.'],
       ['Kan alle i husstanden svare?', 'Ja, gjerne! Alle over 15 år kan svare hver for seg. Ved avstemningen i runde 4 får hver leilighet én stemme.'],
@@ -325,11 +327,14 @@
         .then(function (j) { if (!j.ok) throw new Error(j.feil); return j; });
     }
     // Prototype: eksempeldata + ditt eget svar fra denne nettleseren, regnet ut på samme måte som i Apps Script
-    const alle = (PG8.DEMO_SVAR || []).concat(mitt ? [mitt] : []);
+    // Som i Apps Script: ingen resultater før fristen er ute. ?forhandsvis viser dem likevel (bare i prototypen).
+    const alle = (PG8.DEMO_SVAR || []).concat(mineSvar);
+    const skjult = PG8.innenFrist() && !/forhandsvis/.test(location.search);
     return Promise.resolve({
       ok: true, n: alle.length,
-      resultat: alle.length >= C.minVisning ? aggreger(alle) : null,
-      sitater: PG8.DEMO_SITATER || [], vedlikehold: PG8.DEMO_VEDLIKEHOLD || []
+      resultat: !skjult && alle.length >= C.minVisning ? aggreger(alle) : null,
+      skjultTil: skjult ? C.svarfrist : null,
+      sitater: skjult ? [] : (PG8.DEMO_SITATER || []), vedlikehold: PG8.DEMO_VEDLIKEHOLD || []
     });
   }
 
@@ -348,7 +353,15 @@
   }
 
   function tegnSide() {
-    document.getElementById('hoved').innerHTML = hero() + prosess() + arealer() + mulighetskart() + behov() + ute() + sykkel() + sitater() + holdninger() + vedlikehold() + faq();
+    // Før svarfristen (og mens data lastes) vises bare overskriften og prosessen
+    const kunProsess = !D.lastet || D.skjultTil;
+    document.getElementById('hoved').innerHTML = kunProsess
+      ? hero() + prosess() + (D.lastet ? '<section class="seksjon"><div class="kort venter">Når svarfristen er ute, ' + esc(PG8.svarfristTekst()) +
+          ', kommer oversikten over hvordan vi bruker fellesarealene og hva beboerne har svart, her.</div></section>' : '') +
+          '<footer class="bunn">Styret i Sameiet Pavels gate 8' + (C.kontakt ? ' · <a href="mailto:' + esc(C.kontakt) + '">' + esc(C.kontakt) + '</a>' : '') + '</footer>'
+      : hero() + prosess() + arealer() + mulighetskart() + behov() + ute() + sykkel() + sitater() + holdninger() + vedlikehold() + faq();
+    // Menyen viser bare lenker til seksjoner som finnes
+    document.querySelectorAll('.toppnav a').forEach(function (a) { a.hidden = !document.querySelector(a.getAttribute('href')); });
   }
 
   document.getElementById('demo-band').hidden = !!C.endpoint;

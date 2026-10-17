@@ -156,7 +156,7 @@
       '<div class="handlinger">' + knapper + '</div>' +
       '<p class="hjelpeboks">Trenger du hjelp, eller vil du heller svare på papir? Kontakt ' + esc(C.hjelp) + '.<br>Svarfrist: <b>' + esc(PG8.svarfristTekst()) + '</b>.</p>' +
       '</div>' +
-      '<p style="text-align:center;margin-top:1.4rem"><a href="oversikt.html">Se felles oversikt og foreløpige resultater</a></p>';
+      '<p style="text-align:center;margin-top:1.4rem"><a href="oversikt.html">Se felles oversikt over prosessen</a></p>';
   }
 
   function formater(q, verdi) {
@@ -244,7 +244,7 @@
       '<h1 tabindex="-1" style="margin:0 auto;max-width:none">' + (sistRedigert ? 'Endringene er lagret!' : 'Takk for at du svarte!') + '</h1>' +
       '<p class="ingress" style="margin:.8rem auto 0">Styret går gjennom alle svarene når fristen er ute (' + esc(PG8.svarfristTekst()) + '). Uken etter kommer en ny runde med mer konkrete spørsmål – og til slutt forslag som alle kan stemme over.</p>' +
       '<p style="margin:.8rem auto 0;max-width:40ch">Du kan endre svarene dine fram til ' + esc(PG8.svarfristTekst()) + '. Åpne skjemaet igjen på denne enheten og trykk «Endre svarene».</p>' +
-      '<div class="handlinger" style="justify-content:center"><a class="knapp" href="oversikt.html">Se hva andre har svart ' + PG8.lite('pil') + '</a></div>' +
+      '<div class="handlinger" style="justify-content:center"><a class="knapp" href="oversikt.html">Se felles oversikt ' + PG8.lite('pil') + '</a></div>' +
       '<p style="margin-top:1.4rem;font-size:.9rem;color:var(--muted)">Vil en annen i husstanden svare? <button type="button" class="knapp stille" data-gaa="nytt" style="min-height:auto;padding:0">Start et nytt skjema</button></p>' +
       '</div>';
   }

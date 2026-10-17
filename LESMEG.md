@@ -42,4 +42,4 @@ Kode: https://github.com/andreasfadum/pavelsgate8. Endringer i denne mappen publ
 
 ## Ny runde
 
-Lag nye spørsmål i `sporsmal.js`, sett `runde: 2` og nytt `versjon`, og sett `utsendt` til ny startdato. Svarene fra hver runde holdes adskilt i regnearket.
+Lag nye spørsmål i `sporsmal.js`, sett `runde: 2` og nytt `versjon`, og sett `utsendt` til ny startdato. Sett også `svarfrist`, og legg inn `RESULTATER_FRA` for den nye runden i `apps-script/Kode.gs` (dagen etter fristen). Resultatene på oversikten er skjult til da. Svarene fra hver runde holdes adskilt i regnearket.
