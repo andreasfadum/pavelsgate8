@@ -1,6 +1,7 @@
 /* Felles hjelpere for skjema og oversikt */
 window.PG8 = window.PG8 || {};
 
+PG8.nokkel = function (navn) { return 'pg8.r' + PG8.CONFIG.runde + '.n' + (PG8.CONFIG.nullstilt || 1) + '.' + navn; };
 PG8.lagre = function (nokkel, verdi) { try { localStorage.setItem(nokkel, JSON.stringify(verdi)); } catch (e) {} };
 PG8.hent = function (nokkel) { try { return JSON.parse(localStorage.getItem(nokkel)); } catch (e) { return null; } };
 PG8.slett = function (nokkel) { try { localStorage.removeItem(nokkel); } catch (e) {} };

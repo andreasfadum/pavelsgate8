@@ -1,8 +1,8 @@
 /* Skjemamotor: tegner stegene fra PG8.byggSteg() og holder styr på svarene. */
 (function () {
   const C = PG8.CONFIG;
-  const KLADD = 'pg8.r' + C.runde + '.kladd';
-  const SENDT = 'pg8.r' + C.runde + '.sendt';
+  const KLADD = PG8.nokkel('kladd');
+  const SENDT = PG8.nokkel('sendt');
   const STEG = PG8.byggSteg();
   const ANTALL = STEG.length - 2; // uten velkommen og takk
   const esc = PG8.esc;
@@ -34,6 +34,8 @@
   const $nav = document.getElementById('navbar');
 
   PG8.initTekst();
+  const band = document.getElementById('demo-band');
+  if (band) band.hidden = !!C.endpoint;
 
   function harSvar(v) {
     return v !== undefined && v !== '' && !(Array.isArray(v) && v.length === 0);

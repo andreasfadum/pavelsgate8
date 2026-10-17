@@ -4,7 +4,7 @@
   const esc = PG8.esc;
   PG8.initTekst();
 
-  const mittLagret = PG8.hent('pg8.r' + C.runde + '.sendt');
+  const mittLagret = PG8.hent(PG8.nokkel('sendt'));
   const mineSvar = !mittLagret ? [] : Array.isArray(mittLagret) ? mittLagret.map(function (x) { return x.data; }) : [mittLagret.data || mittLagret];
   const mitt = mineSvar.length ? mineSvar[mineSvar.length - 1] : null;
   let D = { n: 0, sitater: [], vedlikehold: [] };  // svaret fra doGet
@@ -326,9 +326,9 @@
         .then(function (r) { return r.json(); })
         .then(function (j) { if (!j.ok) throw new Error(j.feil); return j; });
     }
-    // Prototype: eksempeldata + ditt eget svar fra denne nettleseren, regnet ut på samme måte som i Apps Script
-    // Som i Apps Script: ingen resultater før fristen er ute. ?forhandsvis viser dem likevel (bare i prototypen).
-    const alle = (PG8.DEMO_SVAR || []).concat(mineSvar);
+    // Uten tilkobling: ingen svar vises. (Eksempeldata lastes bare i lokal test, se apps-script/test/lokal-server.js)
+    // Som i Apps Script: ingen resultater før fristen er ute. ?forhandsvis viser dem likevel.
+    const alle = (PG8.DEMO_SVAR || []).slice();
     const skjult = PG8.innenFrist() && !/forhandsvis/.test(location.search);
     return Promise.resolve({
       ok: true, n: alle.length,
@@ -365,6 +365,7 @@
   }
 
   document.getElementById('demo-band').hidden = !!C.endpoint;
+  if (!C.endpoint) document.getElementById('demo-band').innerHTML = 'Skjemaet er ikke åpnet ennå. Svar som sendes inn nå, blir ikke lagret.';
   tegnSide();
   hentData()
     .then(function (d) {

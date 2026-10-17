@@ -5,6 +5,7 @@ window.PG8 = window.PG8 || {};
 PG8.CONFIG = {
   runde: 1,
   versjon: '1.0',
+  nullstilt: 2,           // Økes for å nullstille kladder og testsvar som ligger lagret i nettleserne
   utsendt: '2026-10-17',  // Dato meldingen sendes ut
   svarfrist: '2026-10-26',// Siste dag for å svare og endre svar (mandag 26. oktober)
   svarfristDager: 7,      // Brukes bare hvis svarfrist ikke er satt
