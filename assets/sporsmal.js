@@ -5,8 +5,9 @@ window.PG8 = window.PG8 || {};
 PG8.CONFIG = {
   runde: 1,
   versjon: '1.0',
-  utsendt: null,          // Dato meldingen sendes ut, f.eks. '2026-10-19'. Svarfrist og runde 2 regnes ut fra denne.
-  svarfristDager: 7,      // Hver runde varer én uke
+  utsendt: '2026-10-17',  // Dato meldingen sendes ut
+  svarfrist: '2026-10-26',// Siste dag for å svare og endre svar (mandag 26. oktober)
+  svarfristDager: 7,      // Brukes bare hvis svarfrist ikke er satt
   husstander: 10,         // Ti leiligheter
   minVisning: 5,          // Resultater vises først fra 5 svar (håndheves også i Apps Script)
   endpoint: '',           // Web app-URL fra Apps Script (slutter på /exec). Tom = prototype med eksempeldata.
@@ -162,19 +163,64 @@ PG8.UTE_FREKVENS = [
   { v: 4, l: 'Flere ganger i uka' }
 ];
 PG8.UTE_ONSKER = [
-  { v: 'sittegrupper', l: 'Flere sittegrupper' },
-  { v: 'glasspaviljong', l: 'Glasspaviljong', h: 'Et lunt rom av glass der vi kan sitte ute også høst og vinter' },
-  { v: 'drivhus', l: 'Minidrivhus' },
-  { v: 'dyrking', l: 'Dyrkekasser / kjøkkenhage' },
-  { v: 'beplantning', l: 'Mer beplantning og blomster' },
-  { v: 'trening', l: 'Treningsapparater' },
-  { v: 'sykkel', l: 'Sykkelparkering' },
-  { v: 'torkestativ', l: 'Tørkestativ' },
-  { v: 'grill', l: 'Grillplass' },
-  { v: 'lek', l: 'Lek for barn' },
-  { v: 'lys', l: 'Bedre belysning ute' },
-  { v: 'annet', l: 'Annet' },
+  { v: 'sittegrupper', l: 'Flere sittegrupper', h: 'Til opphold, nyte sola og spise middag ute.',
+    under: [{ v: 'tak', l: 'Med tak eller le for været' }, { v: 'langbord', l: 'Langbord for større lag' }, { v: 'sma', l: 'Små hjørner for to–fire' }, { v: 'skygge', l: 'Skygge (parasoll eller pergola)' }] },
+  { v: 'glasspaviljong', l: 'Glasspaviljong', h: 'Et lunt rom av glass der vi kan sitte ute også høst og vinter.',
+    under: [{ v: 'sosialt', l: 'Til selskap og samvær' }, { v: 'ro', l: 'Til ro og lesing' }, { v: 'varme', l: 'Med varme om vinteren' }, { v: 'booking', l: 'Kan reserveres av beboerne' }] },
+  { v: 'drivhus', l: 'Minidrivhus', h: 'For dyrking av planter og spiselige vekster.',
+    under: [{ v: 'felles', l: 'Felles drivhus vi deler' }, { v: 'egen', l: 'Egen plass i drivhuset' }, { v: 'stelle', l: 'Jeg vil være med og stelle det' }] },
+  { v: 'dyrking', l: 'Dyrkekasser / kjøkkenhage', h: 'For dyrking av planter og spiselige vekster.',
+    under: [{ v: 'egen', l: 'Egen kasse for husstanden' }, { v: 'felles', l: 'Felles kjøkkenhage' }, { v: 'urter', l: 'Urter og grønnsaker' }, { v: 'baer', l: 'Bær og frukt' }] },
+  { v: 'beplantning', l: 'Mer beplantning og blomster', h: 'Blomster, busker og grønt som gjør hagen frodigere.',
+    under: [{ v: 'blomster', l: 'Blomster' }, { v: 'busker', l: 'Busker og hekk' }, { v: 'frukttraer', l: 'Frukttrær' }, { v: 'insekter', l: 'Insektvennlige planter' }] },
+  { v: 'trening', l: 'Treningsapparater', h: 'Hvis det er interesse, ser vi på hva slags apparater i en senere fase.',
+    under: [{ v: 'styrke', l: 'Styrke' }, { v: 'bevegelighet', l: 'Bevegelighet og balanse' }, { v: 'alle', l: 'Tilpasset alle aldre' }] },
+  { v: 'sykkel', l: 'Sykkelparkering', h: 'Mer om sykler på neste side.',
+    under: [{ v: 'tak', l: 'Under tak' }, { v: 'las', l: 'Med mulighet for fastlåsing' }, { v: 'transport', l: 'Plass til transportsykkel' }] },
+  { v: 'torkestativ', l: 'Tørkestativ', h: 'For å henge klær til tørk ute.',
+    under: [{ v: 'fast', l: 'Fast stativ' }, { v: 'sammenleggbart', l: 'Sammenleggbart stativ' }, { v: 'snorer', l: 'Tørkesnorer' }] },
+  { v: 'grill', l: 'Grillplass', h: 'Et fast sted å grille og samles.',
+    under: [{ v: 'murt', l: 'Fast murt grill' }, { v: 'gass', l: 'Gassgrill' }, { v: 'bal', l: 'Bålpanne' }, { v: 'benker', l: 'Benker rundt' }] },
+  { v: 'lek', l: 'Lek for barn', h: 'Et område eller apparater for lek.',
+    under: [{ v: 'sma', l: 'For små barn' }, { v: 'store', l: 'For større barn' }, { v: 'sandkasse', l: 'Sandkasse' }, { v: 'huske', l: 'Huske eller klatrestativ' }] },
+  { v: 'lys', l: 'Bedre belysning ute', h: 'Lys som gjør det tryggere og hyggeligere å ferdes ute når det er mørkt.',
+    under: [{ v: 'gangvei', l: 'Langs gangveiene' }, { v: 'inngang', l: 'Ved inngangen' }, { v: 'sitte', l: 'Ved sittegruppene' }, { v: 'stemning', l: 'Stemningsbelysning' }] },
+  { v: 'annet', l: 'Annet', h: 'Skriv gjerne hva i feltet under.' },
   { v: 'fornoyd', l: 'Jeg er fornøyd slik det er', eksklusiv: true }
+];
+
+PG8.SYKKEL_ANTALL = [{ v: 0, l: 'Ingen' }, { v: 1, l: '1' }, { v: 2, l: '2' }, { v: 3, l: '3' }, { v: 4, l: '4+' }];
+PG8.SYKKEL_TYPER = [
+  { v: 'vanlig', l: 'Vanlig sykkel' },
+  { v: 'el', l: 'Elsykkel' },
+  { v: 'transport', l: 'Transportsykkel / lastesykkel' },
+  { v: 'barn', l: 'Barnesykkel' },
+  { v: 'tilhenger', l: 'Sykkelvogn eller tilhenger' }
+];
+PG8.SYKKEL_I_DAG = [
+  { v: 'privat_bod', l: 'I privat bod' },
+  { v: 'felles', l: 'I felles bod eller fellesareal' },
+  { v: 'leilighet', l: 'I leiligheten' },
+  { v: 'ute', l: 'Ute i gården' },
+  { v: 'annet', l: 'Et annet sted' }
+];
+PG8.SYKKEL_LAS = [
+  { v: 'rom', l: 'Låst rom eller sykkelbod', h: 'Bare beboerne har nøkkel' },
+  { v: 'stativ', l: 'Stativ der rammen kan låses fast' },
+  { v: 'vanlig', l: 'Vanlig sykkellås er nok' },
+  { v: 'vet_ikke', l: 'Vet ikke' }
+];
+PG8.SYKKEL_SKAP = [
+  { v: 'utstyr', l: 'Tørt skap til utstyr', h: 'Hjelm, regntøy, sete, verktøy',
+    under: [{ v: 'naer', l: 'Rett ved sykkelparkeringen' }, { v: 'fritt', l: 'Kan stå et annet sted' }], underType: 'single', underLabel: 'Hvor bør skapet stå?' },
+  { v: 'lading', l: 'Lading av batteri til elsykkel',
+    under: [{ v: 'naer', l: 'Rett ved sykkelparkeringen' }, { v: 'fritt', l: 'Kan være et annet sted' }], underType: 'single', underLabel: 'Hvor bør ladingen være?' },
+  { v: 'ingen', l: 'Ikke behov', eksklusiv: true }
+];
+PG8.TOPP3_RETNING = [
+  { v: 'ta_vare', l: 'Ta vare på det vi har' },
+  { v: 'forbedre', l: 'Gjøre det bedre' },
+  { v: 'nytt', l: 'Få mer av det, eller noe nytt' }
 ];
 
 PG8.ENDRING = [
@@ -227,21 +273,26 @@ function medEkstra(liste, ekstra, foran) {
 PG8.problemerFor = function (a) { return medEkstra(PG8.PROBLEMER, a.problemerEkstra, 'ingen'); };
 PG8.hvorforIkkeFor = function (a) { return medEkstra(PG8.HVORFOR_IKKE, a.hvorforIkkeEkstra, 'annet'); };
 
+/* Holder prioriteringene i takt med det som er krysset av */
+PG8.rydd = function (s) {
+  const viktig = s.viktig || [];
+  if (s.topp3) s.topp3 = s.topp3.filter(function (id) { return viktig.indexOf(id) > -1; });
+  if (s.neste3) s.neste3 = s.neste3.filter(function (id) { return viktig.indexOf(id) > -1 && (s.topp3 || []).indexOf(id) === -1; });
+  if ((s.topp3 || []).length < 3 || viktig.length <= 3) delete s.neste3;
+};
+
 /* ---------- Stegene ---------- */
 PG8.byggSteg = function () {
   const steg = [];
+  const harSykkel = function (s) { return s['sykkel.antall'] > 0; };
 
   steg.push({ id: 'velkommen', type: 'velkommen' });
 
   steg.push({
     id: 'om', tittel: 'Litt om deg', ingress: 'Dette hjelper oss å se om ulike beboere har ulike behov. Du er fortsatt anonym.',
     sporsmal: [
-      { key: 'om.etasje', type: 'single', layout: 'rad', label: 'Hvilken etasje bor du i?', valg: [
-        { v: 'kjeller', l: 'U.etg.' }, { v: '1', l: '1. etg.' }, { v: '2', l: '2. etg.' }, { v: '3', l: '3. etg.' }] },
       { key: 'om.botid', type: 'single', layout: 'rad', label: 'Hvor lenge har du bodd her?', valg: [
         { v: '0-2', l: 'Under 2 år' }, { v: '2-5', l: '2–5 år' }, { v: '5-15', l: '5–15 år' }, { v: '15+', l: 'Over 15 år' }] },
-      { key: 'om.alder', type: 'single', layout: 'rad', label: 'Hvor gammel er du?', valg: [
-        { v: '-30', l: 'Under 30' }, { v: '30-49', l: '30–49' }, { v: '50-66', l: '50–66' }, { v: '67+', l: '67 eller eldre' }] },
       { key: 'om.husstand', type: 'multi', label: 'Hvem bor i husstanden din?', hjelp: 'Velg alt som passer.', valg: [
         { v: 'alene', l: 'Jeg bor alene' }, { v: 'voksne', l: 'Flere voksne' }, { v: 'barn', l: 'Barn under 13' },
         { v: 'ungdom', l: 'Ungdom 13–19' }, { v: 'dyr', l: 'Kjæledyr' }] },
@@ -276,14 +327,38 @@ PG8.byggSteg = function () {
     sporsmal: [{ key: 'behov', type: 'matrise', rader: PG8.BEHOV, valg: PG8.BEHOV_SKALA }]
   });
 
+  /* Det viktigste: kryss av så mange du vil (med retning), marker så de tre viktigste (påkrevd),
+     og eventuelt de tre nest viktigste. */
+  const iListe = function (s, ider) {
+    return PG8.BEHOV.filter(function (b) { return ider.indexOf(b.id) > -1; }).map(function (b) { return { v: b.id, l: b.l }; });
+  };
   steg.push({
-    id: 'topp3', tittel: 'Dine tre viktigste', ingress: 'Hvis sameiet bare kunne gjøre tre ting, hva skulle det vært?',
-    sporsmal: [{ key: 'topp3', type: 'pick', maks: 3, label: 'Velg inntil tre.',
-      filtrertHjelp: 'Her ser du behovene du merket som «svært viktig».',
-      valg: function (s) {
-        const viktige = PG8.BEHOV.filter(function (b) { return s['behov.' + b.id] === 3; });
-        return (viktige.length >= 2 ? viktige : PG8.BEHOV).map(function (b) { return { v: b.id, l: b.l }; });
-      } }]
+    id: 'viktigst', tittel: 'Det viktigste for deg',
+    ingress: 'Det kan være noe vi har i dag og må ta vare på, eller noe som bør bli bedre eller komme i tillegg.',
+    sporsmal: [
+      { key: 'viktig', type: 'multi', label: 'Hva er viktig for deg?',
+        hjelp: 'Kryss av så mange du vil. For hvert valg kan du si om det handler om å ta vare på, gjøre bedre eller få noe nytt.',
+        valg: function (s) {
+          // Det du merket som svært viktig eller kjekt å ha står først
+          const rang = function (b) { return { 3: 0, 2: 1 }[s['behov.' + b.id]] === undefined ? 2 : { 3: 0, 2: 1 }[s['behov.' + b.id]]; };
+          return PG8.BEHOV.slice().sort(function (a, b) { return rang(a) - rang(b); }).map(function (b) {
+            return { v: b.id, l: b.l, under: PG8.TOPP3_RETNING, underType: 'single', underLabel: 'Hva ønsker du for dette?' };
+          });
+        },
+        krav: function (s) { return (s.viktig || []).length ? '' : 'Kryss av for minst én ting som er viktig for deg.'; } },
+      { key: 'topp3', type: 'pick', maks: 3, merke: 'Prioritet 1', label: 'Hvilke tre er aller viktigst?',
+        hjelp: 'Velg blant det du krysset av over. Dette spørsmålet må besvares.',
+        vis: function (s) { return (s.viktig || []).length > 0; },
+        valg: function (s) { return iListe(s, s.viktig || []); },
+        krav: function (s) {
+          const trengs = Math.min(3, (s.viktig || []).length);
+          return (s.topp3 || []).length >= trengs ? '' : (trengs === 1 ? 'Marker det som er aller viktigst.' : 'Marker de ' + (trengs === 2 ? 'to' : 'tre') + ' som er aller viktigst.');
+        } },
+      { key: 'neste3', type: 'pick', maks: 3, valgfri: true, merke: 'Prioritet 2', label: 'Vil du også velge de tre nest viktigste?',
+        hjelp: 'Valgfritt. Dette er prioriteringene som kommer rett etter de tre viktigste.',
+        vis: function (s) { return (s.topp3 || []).length === 3 && (s.viktig || []).length > 3; },
+        valg: function (s) { return iListe(s, (s.viktig || []).filter(function (id) { return (s.topp3 || []).indexOf(id) === -1; })); } }
+    ]
   });
 
   steg.push({
@@ -296,10 +371,23 @@ PG8.byggSteg = function () {
   });
 
   steg.push({
+    id: 'sykkel', tittel: 'Sykler', ingress: 'Vi vil vite mer om sykkelbehovet, så vi kan planlegge riktig antall plasser og riktig type.',
+    sporsmal: [
+      { key: 'sykkel.antall', type: 'single', layout: 'rad', label: 'Hvor mange sykler har husstanden din?', hjelp: 'Du kan også ta med sykler du planlegger å kjøpe.', valg: PG8.SYKKEL_ANTALL },
+      { key: 'sykkel.typer', type: 'multi', label: 'Hva slags sykler er det?', hjelp: 'Velg alt som passer.', valg: PG8.SYKKEL_TYPER, vis: harSykkel },
+      { key: 'sykkel.i_dag', type: 'multi', label: 'Hvor står syklene i dag?', hjelp: 'Velg alt som passer.', valg: PG8.SYKKEL_I_DAG, vis: harSykkel },
+      { key: 'sykkel.las', type: 'single', label: 'Hvilket behov har du for trygg låsing?', valg: PG8.SYKKEL_LAS, vis: harSykkel },
+      { key: 'sykkel.skap', type: 'multi', label: 'Har du behov for et tørt skap til sykkelutstyr eller lading?', hjelp: 'Velg alt som passer.', valg: PG8.SYKKEL_SKAP, vis: harSykkel },
+      { key: 'sykkel.kommentar', type: 'text', label: 'Noe mer om sykler?', hjelp: 'Valgfritt.', vis: harSykkel }
+    ]
+  });
+
+  steg.push({
     id: 'endring', tittel: 'Endring', ingress: 'Det finnes ingen riktige svar her.',
     sporsmal: [
       { key: 'endring', type: 'single', label: 'Hvor åpen er du for å endre bruken av fellesarealene?', valg: PG8.ENDRING },
-      { key: 'ide', type: 'text', label: 'Har du en idé til hvordan et areal kan brukes bedre?', hjelp: 'For eksempel: «Tørkerommet på loftet kan bli sykkelrom.»' }
+      { key: 'endring.kommentar', type: 'text', label: 'Vil du utdype svaret ditt?', hjelp: 'Valgfritt. Du kan skrive her uansett hva du har krysset av.' },
+      { key: 'ide', type: 'text', label: 'Har du en idé til hvordan et areal kan brukes bedre?', hjelp: 'For eksempel: «Lagringsarealet under skråtaket kunne fått hyller og bedre lys.»' }
     ]
   });
 
@@ -307,6 +395,20 @@ PG8.byggSteg = function () {
     id: 'vedlikehold', tittel: 'Vedlikehold og oppgradering', ingress: 'Bygningen trenger vedlikehold uansett. Styret lager en samlet plan til årsmøtet.',
     sporsmal: [
       { key: 'vedlikehold', type: 'multi', label: 'Hva mener du er viktigst å utbedre eller oppgradere?', hjelp: 'Velg alt som passer.', valg: PG8.VEDLIKEHOLD }
+    ]
+  });
+
+  // Balkong: bare for de få leilighetene det kan være aktuelt for. Vises ikke på oversikten (for få svar til å være anonymt).
+  const balkongAktuelt = function (s) { return s['balkong.aktuelt'] === 'ja'; };
+  steg.push({
+    id: 'balkong', tittel: 'Balkong',
+    ingress: 'Det kan bli aktuelt å se på nye balkonger for noen av leilighetene. Vi vil gjerne vite om det er interesse hos dem det gjelder.',
+    sporsmal: [
+      { key: 'balkong.aktuelt', type: 'single', label: 'Bor du i en leilighet der ny balkong kan være aktuelt?', valg: [
+        { v: 'ja', l: 'Ja' }, { v: 'nei', l: 'Nei' }, { v: 'vet_ikke', l: 'Vet ikke' }] },
+      { key: 'balkong.interesse', type: 'single', label: 'Hvor interessert er du i å få balkong?', vis: balkongAktuelt, valg: [
+        { v: 'svaert', l: 'Svært interessert' }, { v: 'litt', l: 'Litt interessert' }, { v: 'ikke', l: 'Ikke interessert' }, { v: 'vet_ikke', l: 'Vet ikke ennå' }] },
+      { key: 'balkong.kommentar', type: 'text', label: 'Er det noe som er viktig for deg ved en eventuell balkong?', hjelp: 'Valgfritt. For eksempel størrelse, plassering eller kostnad.', vis: balkongAktuelt }
     ]
   });
 
@@ -320,7 +422,7 @@ PG8.byggSteg = function () {
   steg.push({
     id: 'videre', tittel: 'Veien videre', ingress: 'Etter denne runden lager vi konkrete forslag som alle kan si sin mening om.',
     sporsmal: [
-      { key: 'videre', type: 'multi', label: 'Vil du bidra?', hjelp: 'Helt frivillig.', valg: PG8.VIDERE },
+      { key: 'videre', type: 'multi', valgfri: true, label: 'Vil du bidra?', hjelp: 'Helt frivillig.', valg: PG8.VIDERE },
       { key: 'kontakt', type: 'kontakt', label: 'Hvordan kan vi nå deg?', hjelp: 'Lagres for seg, og kobles ikke til svarene dine.',
         vis: function (s) { return (s.videre || []).length > 0; } }
     ]

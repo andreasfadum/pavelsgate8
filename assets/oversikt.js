@@ -156,13 +156,18 @@
     return h;
   }
 
+  function retning(id) {
+    const r = fordelt('viktig.' + id, PG8.TOPP3_RETNING).filter(function (x) { return x.n; });
+    return r.length ? '<br>' + r.map(function (x) { return esc(x.l) + ': ' + x.n; }).join('<br>') : '';
+  }
+
   function behov() {
     let h = '<section class="seksjon" id="behov"><div class="seksjon-hode"><div><p class="etikett">Behov</p><h2>Hva trenger beboerne?</h2></div>' +
       '<p>Andel som sier at behovet er <b>svært viktig</b>. Gult merke viser hvor mange som har det blant sine tre viktigste.</p></div>';
     if (!nok) return h + venter() + '</section>';
     const maks = Math.max.apply(null, R.behov.map(function (b) { return b.svaertViktig; })) || 1;
     h += '<div class="kort"><div class="stolper bred">' + R.behov.map(function (b) {
-      return '<div class="stolpe" tabindex="0" data-tip="<b>' + esc(b.l) + '</b>' + b.svaertViktig + ' % svært viktig<br>' + b.topp3 + ' har det blant sine tre viktigste<br>' + b.n + ' svar">' +
+      return '<div class="stolpe" tabindex="0" data-tip="<b>' + esc(b.l) + '</b>' + b.svaertViktig + ' % svært viktig<br>' + b.topp3 + ' har det blant sine tre viktigste<br>' + (b.neste3 || 0) + ' har det blant de tre nest viktigste<br>' + (b.valgt || 0) + ' har krysset det av som viktig' + retning(b.id) + '<br>' + b.n + ' svar">' +
         '<span class="s-lbl">' + esc(b.l) + '</span>' +
         '<span class="s-spor"><span class="s-bane"><span class="s-fyll" style="width:' + Math.max(1, 100 * b.svaertViktig / maks) + '%"></span></span>' +
         '<span class="s-verdi">' + b.svaertViktig + ' %' + (b.topp3 ? '<span class="topp3-merke">topp 3: ' + b.topp3 + '</span>' : '') + '</span></span></div>';
@@ -174,8 +179,49 @@
     if (felt === 'ide') return 'Idé til bedre bruk';
     if (felt === 'fritt') return 'Annet innspill';
     if (/^ute\./.test(felt || '')) return 'Utearealene';
+    if (/^sykkel\./.test(felt || '')) return 'Sykler';
+    if (/^endring\./.test(felt || '')) return 'Endring';
     const m = /^areal\.([^.]+)\./.exec(felt || '');
     return m && arealNavn[m[1]] ? arealNavn[m[1]].navn : 'Innspill';
+  }
+
+  /* Fordeling for ett spørsmål, sortert, med tekster fra skjemaet */
+  function fordelt(key, valg) {
+    const f = (R.fordeling || {})[key] || {};
+    return valg.map(function (v) { return { v: v.v, l: v.l, n: f[v.v] || 0 }; }).sort(function (a, b) { return b.n - a.n; });
+  }
+
+  function stolper(liste, total) {
+    const maks = Math.max.apply(null, liste.map(function (x) { return x.n; })) || 1;
+    return '<div class="stolper">' + liste.map(function (x) {
+      return '<div class="stolpe" tabindex="0" data-tip="<b>' + esc(x.l) + '</b>' + x.n + ' av ' + total + '"><span class="s-lbl">' + esc(x.l) + '</span>' +
+        '<span class="s-spor"><span class="s-bane"><span class="s-fyll" style="width:' + Math.max(1, 100 * x.n / maks) + '%"></span></span><span class="s-verdi">' + Math.round(100 * x.n / (total || 1)) + ' %</span></span></div>';
+    }).join('') + '</div>';
+  }
+
+  function skapPlass() {
+    const f = fordelt('sykkel.skap.utstyr', PG8.SYKKEL_SKAP[0].under);
+    const tot = f.reduce(function (a, x) { return a + x.n; }, 0);
+    if (!tot) return '';
+    const naer = f.find(function (x) { return x.v === 'naer'; }).n;
+    return '<p style="font-size:.85rem;color:var(--ink-2);margin-top:.8rem">Av dem som har svart på hvor skapet bør stå, mener ' + naer + ' av ' + tot + ' at det bør stå rett ved sykkelparkeringen.</p>';
+  }
+
+  function sykkel() {
+    let h = '<section class="seksjon" id="sykkel"><div class="seksjon-hode"><div><p class="etikett">Sykler</p><h2>Hvor mange sykler, og hva trengs?</h2></div>' +
+      '<p>Grunnlag for å planlegge sykkelparkering med riktig antall plasser og riktig type.</p></div>';
+    if (!nok) return h + venter() + '</section>';
+    const antall = (R.fordeling || {})['sykkel.antall'] || {};
+    const medSykkel = Object.keys(antall).filter(function (k) { return +k > 0; }).reduce(function (a, k) { return a + antall[k]; }, 0);
+    const minst = Object.keys(antall).reduce(function (a, k) { return a + (+k) * antall[k]; }, 0);
+    const kort = function (tittel, key, valg, etter) {
+      return '<div class="kort"><h3>' + tittel + '</h3><p style="font-size:.85rem;color:var(--muted);margin:.2rem 0 .9rem">Andel av dem som har sykkel.</p>' + stolper(fordelt(key, valg), medSykkel) + (etter || '') + '</div>';
+    };
+    h += '<div class="kort" style="margin-bottom:.8rem"><p style="font-size:1.05rem">Minst <b style="font-family:var(--serif);font-size:2rem">' + minst + '</b> sykler, ifølge ' + medSykkel + ' svar fra husstander som har sykkel. ' +
+      '<span style="color:var(--muted);font-size:.88rem">Svar fra flere i samme husstand kan telle samme sykler.</span></p></div>' +
+      '<div class="to-kol">' + kort('Typer sykler', 'sykkel.typer', PG8.SYKKEL_TYPER) + kort('Behov for trygg låsing', 'sykkel.las', PG8.SYKKEL_LAS) +
+      kort('Tørt skap og lading', 'sykkel.skap', PG8.SYKKEL_SKAP.filter(function (x) { return !x.eksklusiv; }), skapPlass()) + kort('Hvor syklene står i dag', 'sykkel.i_dag', PG8.SYKKEL_I_DAG) + '</div></section>';
+    return h;
   }
 
   function ute() {
@@ -191,7 +237,10 @@
     const fornoyd = U.onsker.fornoyd || 0;
     h += '<div class="kort"><div class="stolper">' + liste.map(function (x) {
       const p = Math.round(100 * x.n / D.n);
-      return '<div class="stolpe" tabindex="0" data-tip="<b>' + esc(x.l) + '</b>' + x.n + ' av ' + D.n + ' svar"><span class="s-lbl">' + esc(x.l) + '</span>' +
+      const o = PG8.UTE_ONSKER.find(function (y) { return y.v === x.v; });
+      const sub = fordelt('ute.onsker.' + x.v, o.under || []).filter(function (u) { return u.n; }).slice(0, 2);
+      return '<div class="stolpe" tabindex="0" data-tip="<b>' + esc(x.l) + '</b>' + x.n + ' av ' + D.n + ' svar"><span class="s-lbl">' + esc(x.l) +
+        (sub.length ? '<small class="s-under">Mest ønsket: ' + esc(sub.map(function (u) { return u.l.toLowerCase(); }).join(', ')) + '</small>' : '') + '</span>' +
         '<span class="s-spor"><span class="s-bane"><span class="s-fyll" style="width:' + Math.max(1, 100 * x.n / maks) + '%"></span></span><span class="s-verdi">' + p + ' %</span></span></div>';
     }).join('') + '</div>' +
       '<p style="font-size:.88rem;color:var(--ink-2);margin-top:1rem">' + Math.round(100 * ukentlig / D.n) + ' % bruker utearealene hver uke eller oftere i sommerhalvåret.' +
@@ -299,7 +348,7 @@
   }
 
   function tegnSide() {
-    document.getElementById('hoved').innerHTML = hero() + prosess() + arealer() + mulighetskart() + behov() + ute() + sitater() + holdninger() + vedlikehold() + faq();
+    document.getElementById('hoved').innerHTML = hero() + prosess() + arealer() + mulighetskart() + behov() + ute() + sykkel() + sitater() + holdninger() + vedlikehold() + faq();
   }
 
   document.getElementById('demo-band').hidden = !!C.endpoint;

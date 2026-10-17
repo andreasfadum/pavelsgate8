@@ -68,14 +68,21 @@ PG8.datoer = function () {
   const fmt = function (d, ukedag) {
     return d.toLocaleDateString('nb-NO', ukedag ? { weekday: 'long', day: 'numeric', month: 'long' } : { day: 'numeric', month: 'long' });
   };
-  const frist = pluss(C.svarfristDager);
-  const r2fra = pluss(C.svarfristDager + 1), r2til = pluss(2 * C.svarfristDager + 1);
+  const frist = C.svarfrist ? new Date(C.svarfrist + 'T12:00:00') : pluss(C.svarfristDager);
+  const etter = function (d, dager) { const x = new Date(frist); x.setDate(x.getDate() + dager); return x; };
+  const r2fra = etter(frist, 1), r2til = etter(frist, 7);
   return {
     utsendt: fmt(d0),
     svarfrist: fmt(frist, true),
     runde1: fmt(d0) + '–' + fmt(frist),
     runde2: fmt(r2fra) + '–' + fmt(r2til)
   };
+};
+/* Sant fram til og med svarfristen (i Oslo-tid) */
+PG8.innenFrist = function () {
+  const C = PG8.CONFIG;
+  if (!C.svarfrist) return true;
+  return new Date() <= new Date(C.svarfrist + 'T23:59:59+01:00');
 };
 PG8.svarfristTekst = function () {
   const d = PG8.datoer();

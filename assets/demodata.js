@@ -37,7 +37,6 @@
   const svar = [];
   for (let i = 0; i < 17; i++) {
     const s = { runde: 1, versjon: '1.0' };
-    s['om.alder'] = ['-30', '30-49', '50-66', '67+'][vekt([3, 7, 4, 3])];
     PG8.AREALER.forEach(function (a) {
       const p = profil[a.id], k = 'areal.' + a.id + '.';
       if (tilfeldig() < .06) return; // noen hopper over
@@ -54,10 +53,27 @@
     });
     PG8.BEHOV.forEach(function (b) { s['behov.' + b.id] = vekt(behovVekt[b.id]) + 1; });
     const viktige = PG8.BEHOV.filter(function (b) { return s['behov.' + b.id] === 3; }).map(function (b) { return b.id; });
-    s.topp3 = viktige.sort(function () { return tilfeldig() - .5; }).slice(0, 3);
+    const kjekt = PG8.BEHOV.filter(function (b) { return s['behov.' + b.id] === 2 && tilfeldig() < .4; }).map(function (b) { return b.id; });
+    s.viktig = viktige.sort(function () { return tilfeldig() - .5; }).concat(kjekt);
+    if (!s.viktig.length) s.viktig = ['oppbevaring'];
+    s.viktig.forEach(function (id) { if (tilfeldig() < .8) s['viktig.' + id] = ['ta_vare', 'forbedre', 'nytt'][vekt(id === 'oppbevaring' ? [6, 3, 1] : [2, 4, 4])]; });
+    s.topp3 = s.viktig.slice(0, 3);
+    if (s.viktig.length > 3 && tilfeldig() < .6) s.neste3 = s.viktig.slice(3, 6);
     s.endring = vekt([2, 6, 6, 3]) + 1;
     s['ute.frekvens'] = vekt([2, 4, 4, 5, 2]);
     s['ute.onsker'] = noen({ sittegrupper: .55, glasspaviljong: .4, drivhus: .3, dyrking: .35, beplantning: .45, trening: .15, sykkel: .5, torkestativ: .3, grill: .35, lek: .2, lys: .3 });
+    s['ute.onsker'].forEach(function (v) {
+      const o = PG8.UTE_ONSKER.find(function (x) { return x.v === v; });
+      if (o && o.under && tilfeldig() < .7) s['ute.onsker.' + v] = noen(Object.fromEntries(o.under.map(function (u, i) { return [u.v, i === 0 ? .6 : .35]; })));
+    });
+    s['sykkel.antall'] = vekt([3, 5, 4, 2, 2]);
+    if (s['sykkel.antall'] > 0) {
+      s['sykkel.typer'] = noen({ vanlig: .8, el: .4, transport: .15, barn: .25, tilhenger: .1 });
+      s['sykkel.i_dag'] = noen({ privat_bod: .45, felles: .35, leilighet: .2, ute: .35 });
+      s['sykkel.las'] = ['rom', 'stativ', 'vanlig', 'vet_ikke'][vekt([5, 4, 2, 1])];
+      s['sykkel.skap'] = noen({ utstyr: .45, lading: .35 });
+      if (s['sykkel.skap'].indexOf('utstyr') > -1) s['sykkel.skap.utstyr'] = tilfeldig() < .7 ? 'naer' : 'fritt';
+    }
     s.kostnad = ['0', '0-500', '500-1000', '1000-2000', '2000+'][vekt([3, 6, 5, 2, 1])];
     s.vedlikehold = noen({ vinduer: .65, fasade: .5, isolasjon: .4, energi: .45, balkonger: .35, luftebalkonger: .2, fuktsikring: .3, ventilasjon: .45, lys: .55, las: .3, overflater: .35, el: .15, dorer: .2, trapper: .1, rydding: .6, tilgjengelig: .2 });
     svar.push(s);

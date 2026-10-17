@@ -27,6 +27,14 @@ Oppsett av regneark og Apps Script: se [../apps-script/OPPSETT.md](../apps-scrip
 2. Sett `utsendt` til datoen meldingen sendes, f.eks. `'2026-10-19'`. Svarfrist (7 dager) og runde 2 regnes ut automatisk.
 3. Publiser endringene (se under).
 
+## Test lokalt før publisering
+
+Fra prosjektmappen (en mappe opp):
+
+    node apps-script/test/lokal-server.js
+
+Åpne http://localhost:8649. Siden leses rett fra denne mappen, og svar går til et etterlignet regneark som starter med 17 eksempelsvar. Se regnearket på http://localhost:8649/regneark. Stopp med Ctrl+C.
+
 ## Publisering
 
 Nettsiden ligger på GitHub Pages: **https://andreasfadum.github.io/pavelsgate8/** (skjemaet) og **…/oversikt.html** (felles oversikt).

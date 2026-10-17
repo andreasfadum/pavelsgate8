@@ -49,9 +49,11 @@ function aggreger(svar) {
   });
 
   var topp = tell(svar.map(function (s) { return s.topp3; }));
+  var neste = tell(svar.map(function (s) { return s.neste3; }));
+  var valgt = tell(svar.map(function (s) { return s.viktig; }));
   var behov = idFra(/^behov\.(.+)$/).map(function (id) {
     var v = svar.map(function (s) { return s['behov.' + id]; }).filter(function (x) { return typeof x === 'number'; });
-    return { id: id, n: v.length, svaertViktig: pros(v.filter(function (x) { return x === 3; }).length, v.length), topp3: topp[id] || 0 };
+    return { id: id, n: v.length, svaertViktig: pros(v.filter(function (x) { return x === 3; }).length, v.length), topp3: topp[id] || 0, neste3: neste[id] || 0, valgt: valgt[id] || 0 };
   }).sort(function (a, b) { return b.svaertViktig - a.svaertViktig || b.topp3 - a.topp3; });
 
   var endring = {}, kostnad = {}, uteFrekvens = {};
@@ -62,8 +64,20 @@ function aggreger(svar) {
   });
   var uteBesvart = svar.filter(function (s) { return (s['ute.onsker'] || []).length; }).length;
 
+  // Fordeling for flervalg og enkeltvalg i nyere spørsmål (uteareal, sykkel, retning for topp 3).
+  // Fritekst (.kommentar) telles ikke.
+  var fordeling = {};
+  svar.forEach(function (s) {
+    Object.keys(s).forEach(function (k) {
+      if (!/^(ute|sykkel|viktig)\./.test(k) || /\.kommentar$/.test(k)) return;
+      var f = fordeling[k] || (fordeling[k] = {});
+      [].concat(s[k]).forEach(function (v) { f[v] = (f[v] || 0) + 1; });
+    });
+  });
+
   return {
     n: n,
+    fordeling: fordeling,
     arealer: arealer,
     behov: behov,
     endring: endring,
