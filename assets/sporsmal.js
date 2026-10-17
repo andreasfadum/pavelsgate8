@@ -12,7 +12,7 @@ PG8.CONFIG = {
   svarfristDager: 7,      // Brukes bare hvis svarfrist ikke er satt
   husstander: 10,         // Ti leiligheter
   minVisning: 5,          // Resultater vises først fra 5 svar (håndheves også i Apps Script)
-  endpoint: '',           // Web app-URL fra Apps Script (slutter på /exec). Tom = prototype med eksempeldata.
+  endpoint: 'https://script.google.com/macros/s/AKfycbyMDr9r-M8JB2eNknJs1O_b2n_O2ahYBsrTIyz7nkTCCLvuyEWs_aGxwMe40t6iCfSYIg/exec',           // Web app-URL fra Apps Script (slutter på /exec). Tom = prototype med eksempeldata.
   kontakt: '',             // E-post til styret, vises nederst på oversikten. Tom = skjules.
   hjelp: 'styret'          // Brukes i «Kontakt …». F.eks. 'Kari Nordmann i 2. etasje, tlf. 900 00 000'
 };
