@@ -82,6 +82,7 @@ PG8.datoer = function () {
 /* Sant fram til og med svarfristen (i Oslo-tid) */
 PG8.innenFrist = function () {
   const C = PG8.CONFIG;
+  if (C.stengt) return new Date() < new Date(C.stengt);
   if (!C.svarfrist) return true;
   return new Date() <= new Date(C.svarfrist + 'T23:59:59+01:00');
 };

@@ -17,6 +17,8 @@
   let visUbesvarte = false;
   let redigerer = !!kladd.redigerer;   // true når et innsendt svar endres
   let sistRedigert = false;
+  let status = kladd.status || 'pabegynt';  // 'pabegynt' til man trykker «Send inn», deretter 'sendt'
+  let sistId = null;                         // id for takkesiden (personlig lenke)
 
   /* Innsendte svar fra denne enheten (en liste – flere i husstanden kan svare på samme enhet) */
   function hentSendt() {
@@ -44,7 +46,7 @@
     return Object.keys(svar).filter(function (k) { return harSvar(svar[k]); }).length;
   }
   function lagreKladd() {
-    PG8.lagre(KLADD, { svar: svar, idx: idx, id: innsendingId, redigerer: redigerer, endret: new Date().toISOString() });
+    PG8.lagre(KLADD, { svar: svar, idx: idx, id: innsendingId, redigerer: redigerer, status: status, endret: new Date().toISOString() });
     const l = document.querySelector('.lagret');
     if (l) l.innerHTML = PG8.lite('lagre') + 'Lagret';
   }
@@ -140,16 +142,16 @@
     }
     return '<div class="hero-kort"><div class="dekor"></div><div class="dekor2"></div>' +
       (sendt.length ? '<div class="hjelpeboks sendt-boks" style="margin:0 0 1.2rem"><p>' + PG8.lite('hake').replace('<svg', '<svg style="width:1.1em;height:1.1em;vertical-align:-.15em;color:var(--primary)"') +
-        ' Du har sendt inn svar fra denne enheten – takk! Andre i husstanden kan gjerne svare også.</p>' +
+        ' Du har sendt inn svar fra denne enheten – takk!</p>' +
         (aapent ? '<p style="margin-top:.5rem">Du kan endre svarene dine fram til ' + esc(PG8.svarfristTekst()) + '.</p><div class="handlinger" style="margin-top:.6rem">' +
           sendt.map(function (e, i) {
             return '<button type="button" class="knapp sekundar" data-endre-sendt="' + i + '">Endre svarene' + (sendt.length > 1 ? ' sendt ' + esc(klokke(e.tidspunkt)) : '') + '</button>';
           }).join('') + '</div>' : '') + '</div>' : '') +
       '<p class="overtittel">Fra styret · Runde 1</p>' +
       '<h1 tabindex="-1" style="margin-top:.4rem">Hvordan vil vi bruke fellesarealene?</h1>' +
-      '<p class="ingress">Vi vil vite hvordan du bruker kjelleren, loftet og utearealene i dag, og hva du trenger. Målet er å tilpasse rommene bedre til det vi bruker dem til. Svarene dine blir grunnlaget for konkrete forslag som alle får stemme over før årsmøtet.</p>' +
+      '<p class="ingress">Vi vil vite hvordan du bruker underetasjen, kjelleren, loftet og utearealene i dag, og hva du trenger. Målet er å tilpasse rommene bedre til det vi bruker dem til. Svarene dine blir grunnlaget for konkrete forslag som alle får stemme over før årsmøtet. Det er frivillig å svare. Dette er en invitasjon til å være med og bestemme i fellesskap.</p>' +
       '<ul class="fakta">' +
-      '<li><span class="fi">' + PG8.lite('klokke') + '</span><span><b>Ca. 15 minutter</b><span>Ett tema om gangen. Du kan gå tilbake når som helst.</span></span></li>' +
+      '<li><span class="fi">' + PG8.lite('klokke') + '</span><span><b>15–30 minutter</b><span>Ett tema om gangen. Du kan gå tilbake når som helst.</span></span></li>' +
       '<li><span class="fi">' + PG8.lite('lås') + '</span><span><b>Anonymt</b><span>Vi spør ikke om navn. Bare ett spørsmål må besvares: hva som er viktigst for deg.</span></span></li>' +
       '<li><span class="fi">' + PG8.lite('pause') + '</span><span><b>Lagres underveis</b><span>Lukker du siden, kan du fortsette senere på samme enhet. Etter at du har sendt inn, kan du endre svarene fram til fristen.</span></span></li>' +
       '</ul>' +
@@ -246,8 +248,12 @@
       '<h1 tabindex="-1" style="margin:0 auto;max-width:none">' + (sistRedigert ? 'Endringene er lagret!' : 'Takk for at du svarte!') + '</h1>' +
       '<p class="ingress" style="margin:.8rem auto 0">Styret går gjennom alle svarene når fristen er ute (' + esc(PG8.svarfristTekst()) + '). Uken etter kommer en ny runde med mer konkrete spørsmål – og til slutt forslag som alle kan stemme over.</p>' +
       '<p style="margin:.8rem auto 0;max-width:40ch">Du kan endre svarene dine fram til ' + esc(PG8.svarfristTekst()) + '. Åpne skjemaet igjen på denne enheten og trykk «Endre svarene».</p>' +
+      (C.endpoint && sistId ? '<div class="lenkeboks"><p><b>Din personlige lenke for å endre svarene</b>Med denne lenken kan du endre svarene fra hvilken som helst mobil eller PC fram til fristen. Ikke del den med andre.</p>' +
+        '<input type="text" readonly id="minlenke" value="' + esc(lenkeFor(sistId)) + '" aria-label="Din personlige lenke">' +
+        '<div class="handlinger" style="justify-content:center;margin-top:.6rem"><button type="button" class="knapp sekundar" data-gaa="kopier">Kopier lenken</button>' +
+        '<a class="knapp sekundar" href="mailto:?subject=' + encodeURIComponent('Mine svar – fellesarealene i Pavels gate 8') + '&body=' + encodeURIComponent('Lenke for å endre svarene mine: ' + lenkeFor(sistId)) + '">Send lenken til meg selv</a></div></div>' : '') +
       '<div class="handlinger" style="justify-content:center"><a class="knapp" href="oversikt.html">Se felles oversikt ' + PG8.lite('pil') + '</a></div>' +
-      '<p style="margin-top:1.4rem;font-size:.9rem;color:var(--muted)">Vil en annen i husstanden svare? <button type="button" class="knapp stille" data-gaa="nytt" style="min-height:auto;padding:0">Start et nytt skjema</button></p>' +
+      '<p style="margin-top:1.4rem;font-size:.9rem;color:var(--muted)">Det holder med ett svar per bolig. Vil flere i boligen svare hver for seg? <button type="button" class="knapp stille" data-gaa="nytt" style="min-height:auto;padding:0">Start et nytt skjema</button></p>' +
       '</div>';
   }
 
@@ -309,6 +315,7 @@
   }
 
   function gaaTil(ny) {
+    autoLagre();
     idx = Math.max(0, Math.min(STEG.length - 1, ny));
     if (STEG[idx].type !== 'takk') lagreKladd();
     tegn(true);
@@ -352,7 +359,7 @@
       svar = {};
       Object.keys(post.data || {}).forEach(function (k) { if (['id', 'runde', 'versjon', 'hp'].indexOf(k) === -1) svar[k] = post.data[k]; });
       Object.keys(post.kontakt || {}).forEach(function (k) { if (k !== 'runde' && k !== 'videre') svar['kontakt.' + k] = post.kontakt[k]; });
-      innsendingId = post.id; redigerer = true; tilOppsummering = false;
+      innsendingId = post.id; redigerer = true; tilOppsummering = false; status = 'sendt'; sistAuto = '';
       gaaTil(STEG.length - 2);
       return;
     }
@@ -366,7 +373,7 @@
     else if (hva === 'fortsett') gaaTil(Math.min(kladd.idx || 1, STEG.length - 2) || 1);
     else if (hva === 'nytt') {
       if (antallSvar() && STEG[idx].type !== 'takk' && !confirm('Vil du slette svarene du har gitt og starte på nytt?')) return;
-      svar = {}; innsendingId = null; redigerer = false; PG8.slett(KLADD); tilOppsummering = false; gaaTil(1);
+      svar = {}; innsendingId = null; redigerer = false; status = 'pabegynt'; sistAuto = ''; PG8.slett(KLADD); tilOppsummering = false; gaaTil(1);
     }
     else if (hva === 'neste') {
       const feil = feilISteg(STEG[idx]);
@@ -386,6 +393,12 @@
         return;
       }
       sendInn(document.querySelector('[data-gaa="send"]') || g);
+    }
+    else if (hva === 'kopier') {
+      const f = document.getElementById('minlenke');
+      const ok = function () { g.textContent = 'Kopiert'; };
+      if (navigator.clipboard) navigator.clipboard.writeText(f.value).then(ok, function () { f.select(); });
+      else { f.select(); document.execCommand('copy'); ok(); }
     }
     else if (hva === 'vis-ubesvarte') { visUbesvarte = !visUbesvarte; tegn(false); const b = document.getElementById('ubesvart'); if (b) b.focus({ preventScroll: true }); }
   });
@@ -412,10 +425,15 @@
     return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 12);
   }
 
-  function sendInn(knappEl) {
-    if (!PG8.innenFrist()) { visFeil('Svarfristen var ' + PG8.svarfristTekst() + ', og skjemaet er stengt.'); return; }
-    if (!innsendingId) { innsendingId = lagId(); lagreKladd(); } // samme id ved nytt forsøk – lagres bare én gang
-    const data = { id: innsendingId, runde: C.runde, versjon: C.versjon };
+  /* ---------- Innsending ---------- */
+  // Svarene sendes automatisk til styret hver gang man bytter side, og når man lukker siden.
+  // «Send inn» markerer svaret som fullført. Samme id gjør at det alltid er samme rad som oppdateres.
+  let sistAuto = '';
+  const KONTAKT_SENDT = PG8.nokkel('kontakt');
+
+  function lagInnsending(st) {
+    if (!innsendingId) { innsendingId = lagId(); lagreKladd(); }
+    const data = { id: innsendingId, runde: C.runde, versjon: C.versjon, status: st };
     const kontakt = { runde: C.runde, videre: svar.videre || [] };
     let harKontakt = false;
     Object.keys(svar).forEach(function (k) {
@@ -425,38 +443,93 @@
     });
     const hp = document.getElementById('hp');
     if (hp && hp.value) data.hp = hp.value;
+    return { data: data, kontakt: harKontakt ? kontakt : null };
+  }
 
-    const liste = hentSendt();
-    const forrige = liste.find(function (x) { return x.id === innsendingId; });
-    if (forrige && JSON.stringify(forrige.kontakt || {}) === JSON.stringify(harKontakt ? kontakt : {})) harKontakt = false; // uendret kontaktinfo sendes ikke på nytt
+  function postTil(body, keepalive) {
+    return fetch(C.endpoint, {
+      method: 'POST', redirect: 'follow', keepalive: !!keepalive,
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // unngår CORS-forhåndssjekk mot Apps Script
+      body: JSON.stringify(body)
+    }).then(function (r) { return r.json(); }).then(function (j) { if (!j.ok) throw new Error(j.feil || 'Feil'); return j; });
+  }
+
+  // Kontaktinfo sendes for seg, og bare når den er ny eller endret
+  function sendKontaktOmEndret(kontakt, id) {
+    if (!kontakt) return Promise.resolve();
+    const sendt = PG8.hent(KONTAKT_SENDT) || {};
+    const t = JSON.stringify(kontakt);
+    if (sendt[id] === t) return Promise.resolve();
+    return postTil({ type: 'kontakt', data: kontakt }).then(function () { sendt[id] = t; PG8.lagre(KONTAKT_SENDT, sendt); });
+  }
+
+  function autoLagre() {
+    if (!C.endpoint || !PG8.innenFrist() || !antallSvar()) return;
+    const inn = lagInnsending(status);
+    const tekst = JSON.stringify(inn.data);
+    if (tekst === sistAuto) return;
+    sistAuto = tekst;
+    const id = innsendingId;
+    postTil({ type: 'svar', data: inn.data }, true)
+      .then(function () { return sendKontaktOmEndret(inn.kontakt, id); })
+      .catch(function () { sistAuto = ''; }); // prøves igjen ved neste sidebytte
+  }
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') autoLagre(); });
+
+  function sendInn(knappEl) {
+    if (!PG8.innenFrist()) { visFeil('Svarfristen var ' + PG8.svarfristTekst() + ', og skjemaet er stengt.'); return; }
+    const inn = lagInnsending('sendt');
+    const id = innsendingId;
     const ferdig = function () {
-      const post = { id: innsendingId, tidspunkt: new Date().toISOString(), data: data, kontakt: harKontakt ? kontakt : (forrige ? forrige.kontakt : {}) };
-      const i = liste.findIndex(function (x) { return x.id === innsendingId; });
+      status = 'sendt';
+      const liste = hentSendt();
+      const post = { id: id, tidspunkt: new Date().toISOString(), data: inn.data, kontakt: inn.kontakt || {} };
+      const i = liste.findIndex(function (x) { return x.id === id; });
       if (i > -1) liste[i] = post; else liste.push(post);
       PG8.lagre(SENDT, liste);
       PG8.slett(KLADD);
-      sistRedigert = redigerer;
-      svar = {}; innsendingId = null; redigerer = false; visUbesvarte = false;
+      sistRedigert = redigerer; sistId = id;
+      svar = {}; innsendingId = null; redigerer = false; visUbesvarte = false; status = 'pabegynt'; sistAuto = '';
       gaaTil(STEG.length - 1);
     };
-    if (!C.endpoint) { ferdig(); return; }   // prototype: lagres bare i nettleseren
+    if (!C.endpoint) { ferdig(); return; }   // uten tilkobling: lagres bare i nettleseren
 
     const tekst = knappEl.innerHTML;
     knappEl.disabled = true; knappEl.textContent = 'Sender …';
-    const post = function (body) {
-      return fetch(C.endpoint, {
-        method: 'POST', redirect: 'follow',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // unngår CORS-forhåndssjekk mot Apps Script
-        body: JSON.stringify(body)
-      }).then(function (r) { return r.json(); }).then(function (j) { if (!j.ok) throw new Error(j.feil || 'Feil'); return j; });
-    };
-    post({ type: 'svar', data: data })
-      .then(function () { return harKontakt ? post({ type: 'kontakt', data: kontakt }).catch(function () {}) : null; })
+    postTil({ type: 'svar', data: inn.data })
+      .then(function () { return sendKontaktOmEndret(inn.kontakt, id).catch(function () {}); })
       .then(ferdig)
       .catch(function () {
         knappEl.disabled = false; knappEl.innerHTML = tekst;
         visFeil('Svarene ble ikke sendt. Sjekk at du er koblet til internett, og trykk «Send inn» igjen. Svarene dine er lagret på denne enheten.');
       });
+  }
+
+  /* Personlig lenke: ?svar=<id> henter svarene fra regnearket, så de kan endres fra hvilken som helst enhet */
+  function lenkeFor(id) { return location.origin + location.pathname + '?svar=' + encodeURIComponent(id); }
+
+  function hentFraLenke() {
+    const id = new URLSearchParams(location.search).get('svar');
+    if (!id || !C.endpoint) return false;
+    history.replaceState(null, '', location.pathname);
+    if (kladd.id === id && kladd.svar) { innsendingId = id; redigerer = true; status = kladd.status || 'sendt'; gaaTil(STEG.length - 2); return true; }
+    $steg.innerHTML = '<div class="kort venter" style="margin-top:2rem">Henter svarene dine …</div>';
+    fetch(C.endpoint + '?runde=' + encodeURIComponent(C.runde) + '&hent=' + encodeURIComponent(id), { redirect: 'follow' })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (!j.ok) throw new Error(j.feil);
+        svar = {};
+        Object.keys(j.svar || {}).forEach(function (k) { if (k !== 'status' && k !== 'hp') svar[k] = j.svar[k]; });
+        innsendingId = id; redigerer = true; status = j.svar.status || 'pabegynt'; sistAuto = '';
+        const liste = hentSendt();
+        if (!liste.some(function (x) { return x.id === id; })) { liste.push({ id: id, tidspunkt: new Date().toISOString(), data: j.svar, kontakt: {} }); PG8.lagre(SENDT, liste); }
+        gaaTil(STEG.length - 2);
+      })
+      .catch(function (e) {
+        tegn(true);
+        visFeil(e && e.message === 'stengt' ? 'Svarfristen er ute, og svarene kan ikke lenger endres.' : 'Fant ikke svarene dine. Sjekk at lenken er riktig, eller kontakt styret.');
+      });
+    return true;
   }
 
   function visFeil(melding) {
@@ -470,5 +543,5 @@
     window.scrollTo(0, 0);
   }
 
-  tegn(true);
+  if (!hentFraLenke()) tegn(true);
 })();

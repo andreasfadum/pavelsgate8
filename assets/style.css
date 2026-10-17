@@ -385,3 +385,8 @@ td.tall { text-align: right; font-variant-numeric: tabular-nums; }
 .sendt-boks .knapp { min-height: 2.6rem; }
 .ubesvart-liste .knapp { white-space: nowrap; flex: none; }
 @media (max-width: 520px) { .ubesvart-liste li { flex-direction: column; align-items: flex-start; } }
+
+.lenkeboks { margin: 1.4rem auto 0; max-width: 34rem; padding: 1rem 1.1rem; border-radius: var(--radius); background: var(--primary-soft); text-align: left; }
+.lenkeboks b { display: block; margin-bottom: .2rem; }
+.lenkeboks p { font-size: .92rem; color: var(--ink-2); }
+.lenkeboks input { font-size: .85rem; margin-top: .6rem; }

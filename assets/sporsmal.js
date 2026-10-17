@@ -7,7 +7,8 @@ PG8.CONFIG = {
   versjon: '1.0',
   nullstilt: 2,           // Økes for å nullstille kladder og testsvar som ligger lagret i nettleserne
   utsendt: '2026-10-17',  // Dato meldingen sendes ut
-  svarfrist: '2026-10-26',// Siste dag for å svare og endre svar (mandag 26. oktober)
+  svarfrist: '2026-10-26',// Fristen som står i teksten (mandag 26. oktober)
+  stengt: '2026-10-28T00:00:00+01:00', // I praksis åpent ut 27. oktober. Må stemme med STENGT i Kode.gs
   svarfristDager: 7,      // Brukes bare hvis svarfrist ikke er satt
   husstander: 10,         // Ti leiligheter
   minVisning: 5,          // Resultater vises først fra 5 svar (håndheves også i Apps Script)
@@ -79,7 +80,7 @@ PG8.AREALER = [
     { v: 'verktoy', l: 'Låne verktøy' },
     { v: 'annet', l: 'Annet' }
   ] },
-  { id: 'fyrrom', navn: 'Det gamle fyrrommet i kjelleren', kort: 'Gammelt fyrrom', sted: 'Underetasje', ikon: 'fyrrom', bruk: [
+  { id: 'fyrrom', navn: 'Det gamle fyrrommet i kjelleren', kort: 'Gammelt fyrrom', sted: 'Kjeller', ikon: 'fyrrom', bruk: [
     { v: 'lagring', l: 'Lagring av egne ting' },
     { v: 'sykkel', l: 'Sykkel' },
     { v: 'barn', l: 'Barnevogn / barneutstyr' },
@@ -228,7 +229,7 @@ PG8.ENDRING = [
   { v: 1, l: 'Behold som i dag', h: 'Jeg er fornøyd slik det er' },
   { v: 2, l: 'Små forbedringer', h: 'Rydde, male, bedre lys' },
   { v: 3, l: 'Større oppgradering', h: 'Tilpasse rommene bedre, og kanskje flytte noen funksjoner' },
-  { v: 4, l: 'Tenke helhetlig', h: 'Se kjelleren og loftet under ett, og organisere rommene på nytt' }
+  { v: 4, l: 'Tenke helhetlig', h: 'Se underetasjen, kjelleren og loftet under ett, og organisere rommene på nytt' }
 ];
 
 PG8.VEDLIKEHOLD = [

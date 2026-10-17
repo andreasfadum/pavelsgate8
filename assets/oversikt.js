@@ -33,10 +33,10 @@
       '<div class="statuskort">' +
       '<div class="tall">' + (D.lastet && !D.feil ? D.n : '–') + ' <small>svar så langt</small></div>' +
       '<div class="svarbar" aria-hidden="true"><span style="width:' + andel + '%"></span></div>' +
-      '<p>Målet er at alle ti husstandene er med.<br>Svarfrist: <b>' + esc(PG8.svarfristTekst()) + '</b></p>' +
+      '<p>Vi håper alle ti boligene vil være med.<br>Svarfrist: <b>' + esc(PG8.svarfristTekst()) + '</b></p>' +
       (mitt ? '<span class="svart-merke">' + PG8.lite('hake').replace('<svg', '<svg style="width:1.1em;height:1.1em"') + 'Du har svart – takk!</span>' +
-        '<a class="knapp" href="index.html">Svar for en annen i husstanden</a>'
-        : '<a class="knapp" href="index.html">Svar på skjemaet ' + PG8.lite('pil') + '</a><span style="font-size:.85rem;opacity:.9">Tar ca. 15 minutter</span>') +
+        '<a class="knapp" href="index.html">Endre svarene dine</a>'
+        : '<a class="knapp" href="index.html">Svar på skjemaet ' + PG8.lite('pil') + '</a><span style="font-size:.85rem;opacity:.9">Tar 15–30 minutter</span>') +
       '</div></section>';
   }
 
@@ -310,7 +310,8 @@
       ['Er svarene anonyme?', 'Ja. Skjemaet spør ikke om navn eller leilighetsnummer. Vil du delta videre, kan du oppgi kontaktinfo – den lagres for seg og kobles ikke til svarene dine. Her på siden vises bare samlede tall, og først når svarfristen er ute. Før det kan ingen se hvordan andre har svart.'],
       ['Hvem kan se svarene?', 'Styret har tilgang til alle enkeltsvar, for å kunne lage neste runde. Alle beboere kan se de samlede resultatene her. Svarene slettes når prosessen er ferdig etter årsmøtet.'],
       ['Jeg vil heller svare på papir, eller trenger hjelp', 'Det går helt fint. Kontakt ' + esc(C.hjelp) + ', så får du et papirskjema eller hjelp til å fylle ut.'],
-      ['Kan alle i husstanden svare?', 'Ja, gjerne! Alle over 15 år kan svare hver for seg. Ved avstemningen i runde 4 får hver leilighet én stemme.'],
+      ['Må jeg svare?', 'Nei, det er frivillig. Dette er en invitasjon til å være med og bestemme i fellesskap. Jo flere som svarer, jo bedre grunnlag får vi.'],
+      ['Må alle i husstanden svare?', 'Nei, det holder med ett svar fra hver bolig. Vil flere i boligen svare hver for seg, går det også fint. Ved avstemningen får hver leilighet én stemme.'],
       ['Hva skjer etter at jeg har svart?', 'Styret går gjennom svarene når fristen er ute. Uken etter kommer en ny runde med mer konkrete spørsmål. Deretter lager vi 2–4 løsningsforslag som alle kan stemme over før årsmøtet, der det formelle vedtaket gjøres.'],
       ['Blir felleskostnadene høyere?', 'Det er ikke bestemt. Vedlikehold må gjøres uansett. Spørsmålet om betalingsvilje hjelper oss å lage forslag i ulike prisklasser, og alt avgjøres på årsmøtet.']
     ];
