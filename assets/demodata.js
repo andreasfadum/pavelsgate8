@@ -57,7 +57,7 @@
     s.topp3 = viktige.sort(function () { return tilfeldig() - .5; }).slice(0, 3);
     s.endring = vekt([2, 6, 6, 3]) + 1;
     s['ute.frekvens'] = vekt([2, 4, 4, 5, 2]);
-    s['ute.onsker'] = noen({ sittegrupper: .55, drivhus: .3, dyrking: .35, beplantning: .45, trening: .15, sykkel: .5, torkestativ: .3, grill: .35, lek: .2, lys: .3 });
+    s['ute.onsker'] = noen({ sittegrupper: .55, glasspaviljong: .4, drivhus: .3, dyrking: .35, beplantning: .45, trening: .15, sykkel: .5, torkestativ: .3, grill: .35, lek: .2, lys: .3 });
     s.kostnad = ['0', '0-500', '500-1000', '1000-2000', '2000+'][vekt([3, 6, 5, 2, 1])];
     s.vedlikehold = noen({ vinduer: .65, fasade: .5, isolasjon: .4, energi: .45, balkonger: .35, luftebalkonger: .2, fuktsikring: .3, ventilasjon: .45, lys: .55, las: .3, overflater: .35, el: .15, dorer: .2, trapper: .1, rydding: .6, tilgjengelig: .2 });
     svar.push(s);

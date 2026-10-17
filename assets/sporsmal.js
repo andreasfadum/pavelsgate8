@@ -163,6 +163,7 @@ PG8.UTE_FREKVENS = [
 ];
 PG8.UTE_ONSKER = [
   { v: 'sittegrupper', l: 'Flere sittegrupper' },
+  { v: 'glasspaviljong', l: 'Glasspaviljong', h: 'Et lunt rom av glass der vi kan sitte ute også høst og vinter' },
   { v: 'drivhus', l: 'Minidrivhus' },
   { v: 'dyrking', l: 'Dyrkekasser / kjøkkenhage' },
   { v: 'beplantning', l: 'Mer beplantning og blomster' },
