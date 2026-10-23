@@ -219,6 +219,11 @@ PG8.SYKKEL_SKAP = [
     under: [{ v: 'naer', l: 'Rett ved sykkelparkeringen' }, { v: 'fritt', l: 'Kan være et annet sted' }], underType: 'single', underLabel: 'Hvor bør ladingen være?' },
   { v: 'ingen', l: 'Ikke behov', eksklusiv: true }
 ];
+PG8.BOLIG_SVAR = [
+  { v: 'hele', l: 'Jeg svarer for hele boligen' },
+  { v: 'meg', l: 'Jeg svarer bare for meg selv' },
+  { v: 'flere', l: 'Flere i boligen svarer hver for seg' }
+];
 PG8.TOPP3_RETNING = [
   { v: 'ta_vare', l: 'Ta vare på det vi har' },
   { v: 'forbedre', l: 'Gjøre det bedre' },

@@ -199,6 +199,14 @@
     return ut;
   }
 
+  /* Hvem svaret gjelder for – brukes bare til å anslå hvor mange boliger som har svart */
+  function boligSporsmal() {
+    valgFor['bolig.svar'] = PG8.BOLIG_SVAR;
+    return '<fieldset class="sporsmal"><legend>Svarer du for hele boligen?</legend>' +
+      '<p class="hjelp">Vi bruker dette bare for å vite omtrent hvor mange boliger som har svart. Det holder med ett svar fra hver bolig.</p>' +
+      '<div class="valg">' + PG8.BOLIG_SVAR.map(function (v, i) { return knapp(null, 'bolig.svar', v, i, 'single'); }).join('') + '</div></fieldset>';
+  }
+
   function ubesvartBoks() {
     const u = ubesvarte();
     if (!u.length) return '';
@@ -216,7 +224,7 @@
 
   function tegnOppsummering() {
     let h = '<h1 tabindex="-1">Se over svarene dine</h1><p class="ingress">Trykk «Endre» for å rette noe. Når du er fornøyd, trykker du «Send inn». ' +
-      'Du kan endre svarene dine fram til ' + esc(PG8.svarfristTekst()) + '.</p>' + ubesvartBoks();
+      'Du kan endre svarene dine fram til ' + esc(PG8.svarfristTekst()) + '.</p>' + boligSporsmal() + ubesvartBoks();
     STEG.forEach(function (s, si) {
       if (!s.sporsmal) return;
       let rader = '';
