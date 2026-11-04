@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Før og etter | Pavels gate 8</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Fraunces:opsz,wght@9..144,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F7F4EE;
+      --surface: #FFFFFF;
+      --ink: #1D2B27;
+      --muted: #5E6965;
+      --line: #E4DFD4;
+      --line-strong: #CFC8BA;
+      --primary: #2F6B4F;
+      --primary-hover: #25573F;
+      --primary-soft: #E4EFE8;
+      --focus: #1B4FD8;
+      --serif: 'Fraunces', Georgia, serif;
+      --sans: 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --gutter: 16px;
+      --reservert: 13rem;
+    }
+    * { box-sizing: border-box; }
+    html { font-size: 17px; -webkit-text-size-adjust: 100%; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); line-height: 1.5; }
+
+    .side { max-width: 1240px; margin: 0 auto; padding: 0 var(--gutter); }
+
+    /* Topp */
+    .topp { display: flex; align-items: center; gap: .6rem; padding: .7rem 0 .55rem; }
+    .merke {
+      width: 2rem; height: 2rem; border-radius: 9px; background: var(--primary); color: #fff;
+      display: grid; place-items: center; font-family: var(--serif); font-size: .85rem; font-weight: 600; flex: none;
+    }
+    h1 { margin: 0; font-size: 1rem; font-weight: 700; line-height: 1.2; }
+    h1 span { display: block; color: var(--muted); font-size: .8rem; font-weight: 400; }
+
+    /* Romknapper */
+    .romvalg { display: flex; flex-wrap: wrap; gap: .4rem 1.25rem; padding-bottom: .7rem; }
+    .gruppe { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; }
+    .gruppe-navn { color: var(--muted); font-size: .8rem; margin-right: .1rem; }
+    .gruppe-knapper { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .romknapp {
+      font: inherit; font-size: .9rem; color: var(--ink); background: var(--surface);
+      border: 1px solid var(--line-strong); border-radius: 999px; padding: .36rem .85rem;
+      min-height: 40px; cursor: pointer;
+    }
+    .romknapp:hover { background: var(--primary-soft); border-color: var(--primary); }
+    .romknapp[aria-current="true"] { background: var(--primary); border-color: var(--primary); color: #fff; font-weight: 700; }
+    .romknapp:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+    /* Slider */
+    .scene {
+      --r: 1.333;
+      --pos: 50%;
+      position: relative; overflow: hidden; margin: 0 auto;
+      aspect-ratio: var(--r);
+      width: min(100%, calc(max(20rem, 100vh - var(--reservert)) * var(--r)));
+      width: min(100%, calc(max(20rem, 100dvh - var(--reservert)) * var(--r)));
+      background: #DDD8CC; border-radius: 12px;
+      cursor: ew-resize; touch-action: pan-y; user-select: none; -webkit-user-select: none;
+    }
+    .lag { position: absolute; inset: 0; }
+    .lag img { display: block; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+    .lag-for { clip-path: inset(0 calc(100% - var(--pos)) 0 0); }
+    .merkelapp {
+      position: absolute; top: .65rem; padding: .18rem .6rem; border-radius: 999px;
+      background: rgba(29, 43, 39, .78); color: #fff; font-size: .82rem; white-space: nowrap;
+    }
+    .lag-for .merkelapp { left: .65rem; }
+    .lag-etter .merkelapp { right: .65rem; }
+
+    .skille { position: absolute; top: 0; bottom: 0; left: var(--pos); width: 0; pointer-events: none; }
+    .skille::before {
+      content: ""; position: absolute; top: 0; bottom: 0; left: -1.5px; width: 3px;
+      background: #fff; box-shadow: 0 0 6px rgba(0, 0, 0, .45);
+    }
+    .knott {
+      position: absolute; top: 50%; left: 0; width: 46px; height: 46px; transform: translate(-50%, -50%);
+      display: grid; place-items: center; border-radius: 50%;
+      background: #fff; color: var(--ink); box-shadow: 0 1px 8px rgba(0, 0, 0, .4);
+    }
+    .knott svg { width: 28px; height: 28px; }
+    .skyver {
+      position: absolute; width: 1px; height: 1px; opacity: 0; margin: 0; padding: 0; overflow: hidden;
+      left: var(--pos); top: 50%;
+    }
+    .skyver:focus-visible ~ .skille .knott { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+    /* Tekst under */
+    .omtale { max-width: 46rem; margin: .7rem auto 0; }
+    h2 { margin: 0 0 .15rem; font-family: var(--serif); font-size: 1.3rem; font-weight: 600; line-height: 1.25; }
+    .omtale p { margin: 0; }
+    .fot { max-width: 46rem; margin: 1rem auto 0; padding: .7rem 0 1.4rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .85rem; }
+
+    @media (max-width: 640px) {
+      :root { --reservert: 0rem; }
+      .romvalg { gap: .35rem; }
+      .gruppe { width: 100%; flex-wrap: nowrap; align-items: flex-start; }
+      .gruppe-navn { width: 2.4rem; margin: 0; padding-top: .5rem; flex: none; }
+      .scene { border-radius: 8px; }
+      .merkelapp { font-size: .75rem; top: .45rem; }
+      .lag-for .merkelapp { left: .45rem; }
+      .lag-etter .merkelapp { right: .45rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="side">
+    <header class="topp">
+      <span class="merke" aria-hidden="true">P8</span>
+      <h1>Før og etter <span>Fellesarealene i Pavels gate 8</span></h1>
+    </header>
+
+    <nav class="romvalg" id="romvalg" aria-label="Velg areal"></nav>
+
+    <main>
+      <div class="scene" id="scene">
+        <div class="lag lag-etter">
+          <img id="bilde-etter" alt="" draggable="false">
+          <span class="merkelapp">Skisse, ikke bestemt</span>
+        </div>
+        <div class="lag lag-for">
+          <img id="bilde-for" alt="" draggable="false">
+          <span class="merkelapp">I dag</span>
+        </div>
+        <input class="skyver" id="skyver" type="range" min="0" max="100" step="1" value="50"
+               aria-label="Skyv for å sammenligne bildet fra i dag med skissen">
+        <div class="skille" aria-hidden="true">
+          <div class="knott">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9.5 7 4.5 12l5 5"/><path d="m14.5 7 5 5-5 5"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <section class="omtale" aria-live="polite">
+        <h2 id="rom-tittel"></h2>
+        <p id="rom-tekst"></p>
+      </section>
+    </main>
+
+    <footer class="fot">
+      Skyv streken mot venstre og høyre for å se forskjellen. Alle skissene er AI-bearbeidede foto. De viser en mulighet og er ikke bestemt.
+    </footer>
+  </div>
+
+  <script>
+    var ROM = [
+      {
+        id: 'bakgard', gruppe: 'Ute', knapp: 'Bakgården', tittel: 'Bakgården', b: 1800, h: 1350,
+        tekst: 'Pakkeboks bygget inn i muren, sykkeltak av glass og langbord med to benker. Brostein med åpne fuger slipper vannet gjennom, og ny beplantning skjermer mot naboene.',
+        altFor: 'Bakgården i dag, med gressbakke, støttemur og busker.',
+        altEtter: 'Skisse av bakgården med pakkeboks i muren, sykkeltak, langbord på brostein og ny beplantning.'
+      },
+      {
+        id: 'inngang', gruppe: 'Ute', knapp: 'Inngangen', tittel: 'Inngangen', b: 1800, h: 1350,
+        tekst: 'Bord og to benker med rygg, for rundt seks personer, på skiferheller koblet til hellene foran inngangen. Gress rundt sittegruppen og busker som skjermer leiligheten i første etasje.',
+        altFor: 'Inngangen i dag, med heller, plen og hekk.',
+        altEtter: 'Skisse av inngangen med bord og to benker på skiferheller, omgitt av gress og busker.'
+      },
+      {
+        id: 'vaskerom', gruppe: 'Inne', knapp: 'Vaskerom', tittel: 'Vaskerom', b: 1800, h: 1208,
+        tekst: 'Fullverdig vaskeri med maskiner og utslagsvask i rustfritt stål langs venstre vegg. Under vinduet er det bord for bretting og planter. Tørkestativ i taket og kurvhylle til tøy som venter.',
+        altFor: 'Vaskerommet i dag, med vaskemaskin, tørketrommel, gammel vask og treplatting.',
+        altEtter: 'Skisse av vaskerommet med blå vegger, hvitt gulv, maskiner og vask i stål, bord under vinduet, kurvhylle og høyt skap.'
+      },
+      {
+        id: 'verksted', gruppe: 'Inne', knapp: 'Tørkerom til verksted', tittel: 'Tørkerom til verksted', b: 1800, h: 1617,
+        tekst: 'Rommet brukt som felles verksted, med arbeidsbenk under vinduet, verktøyvegg, sykkelhjørne og hylle for gjenbruk. Innerrommet er lager for materialer. Tørking er vist i vaskerommet ved siden av.',
+        altFor: 'Tørkerommet i dag, med langbord, gammel rulle og slitt betonggulv.',
+        altEtter: 'Skisse av rommet som verksted, med blå vegger, hvitt gulv, arbeidsbenk, verktøyvegg og en sykkel i reparasjonsstativ.'
+      },
+      {
+        id: 'vedbod-vindu', gruppe: 'Inne', knapp: 'Vedbod mot vinduet', tittel: 'Vedbod mot vinduet', b: 1310, h: 1708,
+        tekst: 'Høye vedhyller, benk under vinduet og plass til tralle, vedbærere og kasser. Gule vegger og lyst gulv.',
+        altFor: 'Vedboden i dag, mørk og full av utstyr foran trehyller.',
+        altEtter: 'Skisse av vedboden med gule vegger, høye vedhyller, vindu og benk.'
+      },
+      {
+        id: 'vedbod-inngang', gruppe: 'Inne', knapp: 'Vedbod mot inngangen', tittel: 'Vedbod mot inngangen', b: 1800, h: 1350,
+        tekst: 'Samme vedbod sett mot inngangsdøra. Høye hyller på begge sider, sekker med ved nederst og fri gang fram til døra.',
+        altFor: 'Vedboden i dag sett mot den grønne døra, med trehyller, ved og poser.',
+        altEtter: 'Skisse av vedboden med høye vedhyller på begge sider og fri gang fram til den grønne døra.'
+      }
+    ];
+
+    var scene = document.getElementById('scene');
+    var skyver = document.getElementById('skyver');
+    var bildeFor = document.getElementById('bilde-for');
+    var bildeEtter = document.getElementById('bilde-etter');
+    var romvalg = document.getElementById('romvalg');
+    var knapper = {};
+    var sisteValg = 0;
+
+    function kilde(rom, del) { return 'bilder/' + rom.id + '-' + del + '.jpg'; }
+
+    function settPosisjon(prosent) {
+      var p = Math.max(0, Math.min(100, prosent));
+      scene.style.setProperty('--pos', p + '%');
+      skyver.value = Math.round(p);
+      skyver.setAttribute('aria-valuetext', Math.round(p) + ' prosent av bildet viser i dag');
+    }
+
+    function forhandslast(url) {
+      return new Promise(function (ferdig) {
+        var b = new Image();
+        b.onload = b.onerror = ferdig;
+        b.src = url;
+        setTimeout(ferdig, 1500); // Treg linje: vis bildet mens det lastes
+      });
+    }
+
+    function visRom(id, oppdaterAdresse) {
+      var rom = ROM.filter(function (r) { return r.id === id; })[0] || ROM[0];
+      var valg = ++sisteValg;
+      Object.keys(knapper).forEach(function (k) {
+        if (k === rom.id) knapper[k].setAttribute('aria-current', 'true');
+        else knapper[k].removeAttribute('aria-current');
+      });
+      if (oppdaterAdresse) history.replaceState(null, '', '#' + rom.id);
+      document.title = rom.tittel + ': før og etter | Pavels gate 8';
+      document.getElementById('rom-tittel').textContent = rom.tittel;
+      document.getElementById('rom-tekst').textContent = rom.tekst;
+
+      Promise.all([forhandslast(kilde(rom, 'for')), forhandslast(kilde(rom, 'etter'))]).then(function () {
+        if (valg !== sisteValg) return;
+        scene.style.setProperty('--r', rom.b / rom.h);
+        bildeFor.src = kilde(rom, 'for');
+        bildeFor.alt = rom.altFor;
+        bildeEtter.src = kilde(rom, 'etter');
+        bildeEtter.alt = rom.altEtter;
+        settPosisjon(50);
+      });
+    }
+
+    // Romknapper, gruppert i ute og inne
+    ['Ute', 'Inne'].forEach(function (navn) {
+      var gruppe = document.createElement('div');
+      gruppe.className = 'gruppe';
+      gruppe.setAttribute('role', 'group');
+      gruppe.setAttribute('aria-label', navn);
+      var etikett = document.createElement('span');
+      etikett.className = 'gruppe-navn';
+      etikett.textContent = navn;
+      etikett.setAttribute('aria-hidden', 'true');
+      gruppe.appendChild(etikett);
+      var rad = document.createElement('div');
+      rad.className = 'gruppe-knapper';
+      gruppe.appendChild(rad);
+      ROM.filter(function (r) { return r.gruppe === navn; }).forEach(function (rom) {
+        var k = document.createElement('button');
+        k.type = 'button';
+        k.className = 'romknapp';
+        k.textContent = rom.knapp;
+        k.addEventListener('click', function () { visRom(rom.id, true); });
+        knapper[rom.id] = k;
+        rad.appendChild(k);
+      });
+      romvalg.appendChild(gruppe);
+    });
+
+    // Dra med mus eller finger. Loddrett sveip på mobil ruller siden som vanlig.
+    function fraPeker(e) {
+      var boks = scene.getBoundingClientRect();
+      settPosisjon((e.clientX - boks.left) / boks.width * 100);
+    }
+    var drar = false;
+    scene.addEventListener('pointerdown', function (e) {
+      drar = true;
+      scene.setPointerCapture(e.pointerId);
+      fraPeker(e);
+      e.preventDefault();
+    });
+    scene.addEventListener('pointermove', function (e) { if (drar) fraPeker(e); });
+    scene.addEventListener('pointerup', function () { drar = false; });
+    scene.addEventListener('pointercancel', function () { drar = false; });
+
+    // Piltaster via den skjulte skyveren
+    skyver.addEventListener('input', function () { settPosisjon(Number(skyver.value)); });
+
+    window.addEventListener('hashchange', function () { visRom(location.hash.slice(1), false); });
+
+    visRom(location.hash.slice(1), false);
+
+    // Last resten i bakgrunnen, slik at byttet mellom rom går raskt
+    window.addEventListener('load', function () {
+      ROM.forEach(function (rom) { forhandslast(kilde(rom, 'for')); forhandslast(kilde(rom, 'etter')); });
+    });
+  </script>
+</body>
+</html>
