@@ -23,7 +23,7 @@
       --serif: 'Fraunces', Georgia, serif;
       --sans: 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', sans-serif;
       --gutter: 16px;
-      --reservert: 13rem;
+      --reservert: 14.2rem;
     }
     * { box-sizing: border-box; }
     html { font-size: 17px; -webkit-text-size-adjust: 100%; }
@@ -53,6 +53,28 @@
     .romknapp:hover { background: var(--primary-soft); border-color: var(--primary); }
     .romknapp[aria-current="true"] { background: var(--primary); border-color: var(--primary); color: #fff; font-weight: 700; }
     .romknapp:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+    /* Brytere: bytt funksjon mellom to rom */
+    .brytere { display: flex; flex-wrap: wrap; gap: .4rem; width: 100%; }
+    .bytteknapp {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font: inherit; font-size: .9rem; font-weight: 700; color: var(--primary-hover); background: var(--primary-soft);
+      border: 1px solid var(--primary); border-radius: 14px; padding: .3rem .85rem .3rem .55rem;
+      text-align: left; line-height: 1.25;
+      min-height: 40px; cursor: pointer;
+    }
+    .bytteknapp:hover { background: #D5E6DB; }
+    .bryter-ord { display: block; }
+    .forklaring { display: block; font-size: .78rem; font-weight: 400; color: var(--ink); }
+    .bytteknapp:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+    .bryter { position: relative; width: 2.1rem; height: 1.2rem; border-radius: 999px; background: var(--muted); flex: none; transition: background .15s; }
+    .bryter::after {
+      content: ""; position: absolute; top: .15rem; left: .15rem; width: .9rem; height: .9rem;
+      border-radius: 50%; background: #fff; transition: transform .15s;
+    }
+    .bytteknapp[aria-pressed="true"] .bryter { background: var(--primary); }
+    .bytteknapp[aria-pressed="true"] .bryter::after { transform: translateX(.9rem); }
+    @media (prefers-reduced-motion: reduce) { .bryter, .bryter::after { transition: none; } }
 
     /* Slider */
     .scene {
@@ -123,7 +145,7 @@
       <div class="scene" id="scene">
         <div class="lag lag-etter">
           <img id="bilde-etter" alt="" draggable="false">
-          <span class="merkelapp">Skisse, ikke bestemt</span>
+          <span class="merkelapp" id="merkelapp-etter">Skisse, ikke bestemt</span>
         </div>
         <div class="lag lag-for">
           <img id="bilde-for" alt="" draggable="false">
@@ -147,7 +169,7 @@
     </main>
 
     <footer class="fot">
-      Skyv streken mot venstre og høyre for å se forskjellen. Alle skissene er AI-bearbeidede foto. De viser en mulighet og er ikke bestemt.
+      Skyv streken mot venstre og høyre for å se forskjellen. Alle skissene er AI-bearbeidede foto. De viser en mulighet og er ikke bestemt. De to bryterne viser rommene med motsatt funksjon.
     </footer>
   </div>
 
@@ -169,25 +191,56 @@
         id: 'vaskerom', gruppe: 'Inne', knapp: 'Vaskerom', tittel: 'Vaskerom', b: 1800, h: 1208,
         tekst: 'Fullverdig vaskeri med maskiner og utslagsvask i rustfritt stål langs venstre vegg. Under vinduet er det bord for bretting og planter. Tørkestativ i taket og kurvhylle til tøy som venter.',
         altFor: 'Vaskerommet i dag, med vaskemaskin, tørketrommel, gammel vask og treplatting.',
-        altEtter: 'Skisse av vaskerommet med blå vegger, hvitt gulv, maskiner og vask i stål, bord under vinduet, kurvhylle og høyt skap.'
+        altEtter: 'Skisse av vaskerommet med blå vegger, hvitt gulv, maskiner og vask i stål, bord under vinduet, kurvhylle og høyt skap.',
+        bytte: {
+          par: 'vask', tittel: 'Vaskerom til beredskapsrom',
+          tekst: 'Rommet brukt som husets beredskapsrom. Vannkanner i reoler langs venstre vegg, benk med stormkjøkken, pledd og soveposer under vinduet, og mat og hygieneartikler i reol mot bakveggen. Ingenting står direkte på gulvet. Vaskeriet er vist i fyrrommet.',
+          altEtter: 'Skisse av rommet som beredskapsrom, med blå vegger, hvitt gulv, reoler med blå vannkanner til venstre, benk under vinduet og reol med mat og hygieneartikler.'
+        }
       },
       {
-        id: 'verksted', gruppe: 'Inne', knapp: 'Tørkerom til verksted', tittel: 'Tørkerom til verksted', b: 1800, h: 1617,
+        id: 'verksted', gruppe: 'Inne', knapp: 'Tørkerom', tittel: 'Tørkerom til verksted', b: 1800, h: 1617,
         tekst: 'Rommet brukt som felles verksted, med arbeidsbenk under vinduet, verktøyvegg, sykkelhjørne og hylle for gjenbruk. Innerrommet er lager for materialer. Tørking er vist i vaskerommet ved siden av.',
         altFor: 'Tørkerommet i dag, med langbord, gammel rulle og slitt betonggulv.',
-        altEtter: 'Skisse av rommet som verksted, med blå vegger, hvitt gulv, arbeidsbenk, verktøyvegg og en sykkel i reparasjonsstativ.'
+        altEtter: 'Skisse av rommet som verksted, med blå vegger, hvitt gulv, arbeidsbenk, verktøyvegg og en sykkel i reparasjonsstativ.',
+        bytte: {
+          par: 'ved', tittel: 'Tørkerom til vedrom',
+          tekst: 'Rommet brukt som felles vedrom, med høye hyller langs veggene, ved i nettsekker nederst og en lav hylle under vinduet. Innerrommet har hyller med ved på begge sider. Midt i rommet står et stort bord, og i taket henger et tørkestativ. Det er fri gulvflate rundt bordet, slik at det er plass til tralla.',
+          altEtter: 'Skisse av rommet som vedrom, med blå vegger, hvitt gulv, høye hyller fulle av ved, nettsekker nederst, en et stort bord midt i rommet, en tralle lastet med ved og et tørkestativ i taket.'
+        }
       },
       {
         id: 'vedbod-vindu', gruppe: 'Inne', knapp: 'Vedbod mot vinduet', tittel: 'Vedbod mot vinduet', b: 1310, h: 1708,
         tekst: 'Høye vedhyller, benk under vinduet og plass til tralle, vedbærere og kasser. Gule vegger og lyst gulv.',
         altFor: 'Vedboden i dag, mørk og full av utstyr foran trehyller.',
-        altEtter: 'Skisse av vedboden med gule vegger, høye vedhyller, vindu og benk.'
+        altEtter: 'Skisse av vedboden med gule vegger, høye vedhyller, vindu og benk.',
+        bytte: {
+          par: 'ved', tittel: 'Vedbod til verksted, mot vinduet',
+          tekst: 'Rommet brukt som felles verksted. Under vinduet er det plass til søm og lapping, med symaskin, skuffer og kasser med stoff. Til høyre står ski og staver fritt på veggen, så de er lette å løfte ut. Benken for smøring og reparasjon av sportsutstyr står videre langs samme vegg, utenfor bildet. Lukene i veggen holdes fri.',
+          altEtter: 'Skisse av rommet som verksted, med gule vegger, symaskin på en benk under vinduet, krakk, skuffer og ski med staver som står fritt på veggen.'
+        }
       },
       {
         id: 'vedbod-inngang', gruppe: 'Inne', knapp: 'Vedbod mot inngangen', tittel: 'Vedbod mot inngangen', b: 1800, h: 1350,
         tekst: 'Samme vedbod sett mot inngangsdøra. Høye hyller på begge sider, sekker med ved nederst og fri gang fram til døra.',
         altFor: 'Vedboden i dag sett mot den grønne døra, med trehyller, ved og poser.',
-        altEtter: 'Skisse av vedboden med høye vedhyller på begge sider og fri gang fram til den grønne døra.'
+        altEtter: 'Skisse av vedboden med høye vedhyller på begge sider og fri gang fram til den grønne døra.',
+        bytte: {
+          par: 'ved', tittel: 'Vedbod til verksted, mot inngangen',
+          tekst: 'Samme rom sett mot inngangsdøra. Til venstre er det sykkelhjørne med reparasjonsstativ, hjulstativ, pumpe og verktøy på veggen. Til høyre er det snekkerbenk med skruestikke, verktøytavle og hylle. Trappa og gangen fram til døra er fri.',
+          altEtter: 'Skisse av rommet som verksted, med en sykkel i reparasjonsstativ til venstre og en snekkerbenk med verktøytavle og krakker til høyre, og fri gang fram til den grønne døra.'
+        }
+      },
+      {
+        id: 'fyrrom', gruppe: 'Inne', knapp: 'Fyrrom', tittel: 'Fyrrom til beredskapsrom', b: 1800, h: 1339,
+        tekst: 'Beredskapslageret er vedtatt, men plasseringen er ikke avgjort. Her er det vist i fyrrommet, med vann i 10-liters kanner under vinduet, mat og hygieneartikler ved døra, og varme, lys og førstehjelp ved den murte sokkelen. Ingenting står på gulvet. Rommet må først sikres mot kloakk.',
+        altFor: 'Fyrrommet i dag, med grønn dør, murt sokkel med brostein, trebukker, rør og flekkete vegger.',
+        altEtter: 'Skisse av fyrrommet som beredskapsrom, med hvite vegger, lysegrått gulv, reoler med blå vannkanner under vinduet, reol med mat og hygieneartikler ved den grønne døra, og pledd, soveposer, radioer, lanterner og førstehjelpsskap ved den hvite sokkelen.',
+        bytte: {
+          par: 'vask', tittel: 'Fyrrom til vaskerom',
+          tekst: 'Rommet brukt som vaskerom, med vaskemaskin, tørketrommel og utslagsvask i stål langs høyre vegg. Den murte sokkelen har fått eikeplate til bretting, og på veggen er det tørkestativ, strykebrett og hyller. Høyt skap til venstre for døra. Sikring mot kloakk må på plass først.',
+          altEtter: 'Skisse av fyrrommet som vaskerom, med hvite vegger, maskiner og vask i stål, eikeplate på sokkelen, tralle med tøypose og høyt hvitt skap.'
+        }
       }
     ];
 
@@ -198,8 +251,36 @@
     var romvalg = document.getElementById('romvalg');
     var knapper = {};
     var sisteValg = 0;
+    var gjeldende = null;
+    var PAR = [
+      { id: 'ved', tekst: 'Bytt tørkerom og vedbod', start: 'verksted',
+        vanlig: 'Nå: verksted i tørkerommet, ved i vedboden', byttet: 'Nå: ved i tørkerommet, verksted i vedboden' },
+      { id: 'vask', tekst: 'Bytt vaskerom og fyrrom', start: 'vaskerom',
+        vanlig: 'Nå: vaskeri i vaskerommet, beredskap i fyrrommet', byttet: 'Nå: beredskap i vaskerommet, vaskeri i fyrrommet' }
+    ];
+    var byttet = {};
+    (new URLSearchParams(location.search).get('byttet') || '').split(',').forEach(function (id) {
+      if (PAR.some(function (p) { return p.id === id; })) byttet[id] = true;
+    });
+    var brytere = {};
 
     function kilde(rom, del) { return 'bilder/' + rom.id + '-' + del + '.jpg'; }
+
+    // Tekst og bilde for rommet slik det vises nå, med eller uten byttet funksjon
+    function erByttet(rom) { return !!(rom.bytte && byttet[rom.bytte.par]); }
+    function visning(rom) { return erByttet(rom) ? rom.bytte : rom; }
+    function etterKilde(rom) { return kilde(rom, erByttet(rom) ? 'bytte' : 'etter'); }
+    function adresse(rom) {
+      var aktive = PAR.filter(function (p) { return byttet[p.id]; }).map(function (p) { return p.id; }).join(',');
+      return location.pathname + (aktive ? '?byttet=' + aktive : '') + '#' + rom.id;
+    }
+
+    function oppdaterBrytere() {
+      PAR.forEach(function (p) {
+        brytere[p.id].setAttribute('aria-pressed', byttet[p.id] ? 'true' : 'false');
+        brytere[p.id].querySelector('.forklaring').textContent = byttet[p.id] ? p.byttet : p.vanlig;
+      });
+    }
 
     function settPosisjon(prosent) {
       var p = Math.max(0, Math.min(100, prosent));
@@ -217,26 +298,30 @@
       });
     }
 
-    function visRom(id, oppdaterAdresse) {
+    function visRom(id, oppdaterAdresse, beholdPosisjon) {
       var rom = ROM.filter(function (r) { return r.id === id; })[0] || ROM[0];
       var valg = ++sisteValg;
+      var vis = visning(rom);
+      gjeldende = rom;
       Object.keys(knapper).forEach(function (k) {
         if (k === rom.id) knapper[k].setAttribute('aria-current', 'true');
         else knapper[k].removeAttribute('aria-current');
       });
-      if (oppdaterAdresse) history.replaceState(null, '', '#' + rom.id);
-      document.title = rom.tittel + ': før og etter | Pavels gate 8';
-      document.getElementById('rom-tittel').textContent = rom.tittel;
-      document.getElementById('rom-tekst').textContent = rom.tekst;
+      if (oppdaterAdresse) history.replaceState(null, '', adresse(rom));
+      document.title = vis.tittel + ': før og etter | Pavels gate 8';
+      document.getElementById('rom-tittel').textContent = vis.tittel;
+      document.getElementById('rom-tekst').textContent = vis.tekst;
 
-      Promise.all([forhandslast(kilde(rom, 'for')), forhandslast(kilde(rom, 'etter'))]).then(function () {
+      Promise.all([forhandslast(kilde(rom, 'for')), forhandslast(etterKilde(rom))]).then(function () {
         if (valg !== sisteValg) return;
         scene.style.setProperty('--r', rom.b / rom.h);
         bildeFor.src = kilde(rom, 'for');
         bildeFor.alt = rom.altFor;
-        bildeEtter.src = kilde(rom, 'etter');
-        bildeEtter.alt = rom.altEtter;
-        settPosisjon(50);
+        bildeEtter.src = etterKilde(rom);
+        bildeEtter.alt = vis.altEtter;
+        document.getElementById('merkelapp-etter').textContent =
+          erByttet(rom) ? 'Byttet om: skisse, ikke bestemt' : 'Skisse, ikke bestemt';
+        if (!beholdPosisjon) settPosisjon(50);
       });
     }
 
@@ -266,6 +351,37 @@
       romvalg.appendChild(gruppe);
     });
 
+    // Brytere: viser to rom med motsatt funksjon. Står du i et annet rom, hopper siden til det første i paret.
+    var bryterRad = document.createElement('div');
+    bryterRad.className = 'brytere';
+    PAR.forEach(function (p) {
+      var knapp = document.createElement('button');
+      knapp.type = 'button';
+      knapp.className = 'bytteknapp';
+      var bryter = document.createElement('span');
+      bryter.className = 'bryter';
+      bryter.setAttribute('aria-hidden', 'true');
+      knapp.appendChild(bryter);
+      var ord = document.createElement('span');
+      ord.className = 'bryter-ord';
+      ord.textContent = p.tekst;
+      var forklaring = document.createElement('span');
+      forklaring.className = 'forklaring';
+      ord.appendChild(forklaring);
+      knapp.appendChild(ord);
+      knapp.addEventListener('click', function () {
+        byttet[p.id] = !byttet[p.id];
+        oppdaterBrytere();
+        var iParet = gjeldende.bytte && gjeldende.bytte.par === p.id;
+        if (byttet[p.id] && !iParet) visRom(p.start, true);
+        else visRom(gjeldende.id, true, true);
+      });
+      brytere[p.id] = knapp;
+      bryterRad.appendChild(knapp);
+    });
+    romvalg.appendChild(bryterRad);
+    oppdaterBrytere();
+
     // Dra med mus eller finger. Loddrett sveip på mobil ruller siden som vanlig.
     function fraPeker(e) {
       var boks = scene.getBoundingClientRect();
@@ -291,7 +407,11 @@
 
     // Last resten i bakgrunnen, slik at byttet mellom rom går raskt
     window.addEventListener('load', function () {
-      ROM.forEach(function (rom) { forhandslast(kilde(rom, 'for')); forhandslast(kilde(rom, 'etter')); });
+      ROM.forEach(function (rom) {
+        forhandslast(kilde(rom, 'for'));
+        forhandslast(kilde(rom, 'etter'));
+        if (rom.bytte) forhandslast(kilde(rom, 'bytte'));
+      });
     });
   </script>
 </body>
