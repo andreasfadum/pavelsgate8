@@ -42,8 +42,8 @@
 
     /* Romknapper */
     .romvalg { display: flex; flex-wrap: wrap; gap: .4rem 1.25rem; padding-bottom: .7rem; }
-    .gruppe { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; }
-    .gruppe-navn { color: var(--muted); font-size: .8rem; margin-right: .1rem; }
+    .gruppe { display: flex; flex-wrap: nowrap; align-items: flex-start; gap: .4rem; width: 100%; }
+    .gruppe-navn { color: var(--muted); font-size: .8rem; width: 2.4rem; flex: none; padding-top: .55rem; }
     .gruppe-knapper { display: flex; flex-wrap: wrap; gap: .4rem; }
     .romknapp {
       font: inherit; font-size: .9rem; color: var(--ink); background: var(--surface);
@@ -56,6 +56,7 @@
 
     /* Brytere: bytt funksjon mellom to rom */
     .brytere { display: flex; flex-wrap: wrap; gap: .4rem; width: 100%; }
+    .brytere[hidden], .bytteknapp[hidden] { display: none; }
     .bytteknapp {
       display: inline-flex; align-items: center; gap: .5rem;
       font: inherit; font-size: .9rem; font-weight: 700; color: var(--primary-hover); background: var(--primary-soft);
@@ -123,8 +124,9 @@
     @media (max-width: 640px) {
       :root { --reservert: 0rem; }
       .romvalg { gap: .35rem; }
-      .gruppe { width: 100%; flex-wrap: nowrap; align-items: flex-start; }
-      .gruppe-navn { width: 2.4rem; margin: 0; padding-top: .5rem; flex: none; }
+      .gruppe-knapper { flex-wrap: nowrap; overflow-x: auto; min-width: 0; padding: .15rem; margin: -.15rem; scrollbar-width: none; }
+      .gruppe-knapper::-webkit-scrollbar { display: none; }
+      .romknapp { flex: none; }
       .scene { border-radius: 8px; }
       .merkelapp { font-size: .75rem; top: .45rem; }
       .lag-for .merkelapp { left: .45rem; }
@@ -169,7 +171,7 @@
     </main>
 
     <footer class="fot">
-      Skyv streken mot venstre og høyre for å se forskjellen. Alle skissene er AI-bearbeidede foto. De viser en mulighet og er ikke bestemt. De to bryterne viser rommene med motsatt funksjon.
+      Skyv streken mot venstre og høyre for å se forskjellen. Alle skissene er AI-bearbeidede foto. De viser en mulighet og er ikke bestemt. Der det finnes en bryter, viser den et alternativ for samme bilde.
     </footer>
   </div>
 
@@ -185,7 +187,12 @@
         id: 'inngang', gruppe: 'Ute', knapp: 'Inngangen', tittel: 'Inngangen', b: 1800, h: 1350,
         tekst: 'Bord og to benker med rygg, for rundt seks personer, på skiferheller koblet til hellene foran inngangen. Gress rundt sittegruppen og busker som skjermer leiligheten i første etasje.',
         altFor: 'Inngangen i dag, med heller, plen og hekk.',
-        altEtter: 'Skisse av inngangen med bord og to benker på skiferheller, omgitt av gress og busker.'
+        altEtter: 'Skisse av inngangen med bord og to benker på skiferheller, omgitt av gress og busker.',
+        bytte: {
+          par: 'balkong', tittel: 'Inngangen med balkonger',
+          tekst: 'Samme sittegruppe, med balkong over inngangen. Slanke svarte stolper bærer balkongen, men bare den ene synes i dette bildet. Himlingen under har trespiler av eik og innfelt LED-belysning, og husnummeret er flyttet til brystningen. Høyden under balkongen er et anslag.',
+          altEtter: 'Skisse av inngangen med sittegruppe på skiferheller og balkong over, båret av en slank svart stolpe, med himling av eikespiler og innfelt LED-lys.'
+        }
       },
       {
         id: 'bakgard-ost', gruppe: 'Ute', knapp: 'Bakgård mot øst', tittel: 'Bakgård mot øst', b: 1800, h: 1350,
@@ -204,6 +211,18 @@
         tekst: 'Samme orangeri sett fra fasaden, med langsiden mot plenen og langbordet synlig gjennom glasset. Tørkestativet står nærmest, til venstre i bildet, mellom orangeriet og fasaden. Steinhellene er borte, og brostein ligger der grusen er. Størrelsen på orangeriet er et anslag ut fra fotoet og må måles på stedet.',
         altFor: 'Bakgården mot nord i dag, med plen, steinheller, tørkestativ, lav mur og hekk.',
         altEtter: 'Skisse av plenen sett fra fasaden, med et opplyst orangeri med teglbrystning og langbord, tørkestativ til venstre og brostein bak til høyre.'
+      },
+      {
+        id: 'fasade-vest', gruppe: 'Ute', knapp: 'Fasade fra vest', tittel: 'Fasade fra vest', b: 1800, h: 1059,
+        tekst: 'Balkonger mot gaten i tre etasjer over inngangen, i samme stil som balkongene mot bakgården. Brystning i pusset mur i samme farge som fasaden, med rekkverk i svart emaljert jern. Dører ut til balkongene i samme stil og bredde som vinduene, og to slanke svarte stolper under den nederste balkongen. Målene er anslag.',
+        altFor: 'Fasaden mot gaten i dag, sett fra vest, med vinduer i tre etasjer over inngangen.',
+        altEtter: 'Skisse av fasaden sett fra vest med tre balkonger over inngangen, brystning i pusset mur, svart rekkverk, dører ut til balkongene og to slanke svarte stolper under den nederste.'
+      },
+      {
+        id: 'fasade-syd', gruppe: 'Ute', knapp: 'Fasade fra syd', tittel: 'Fasade fra syd', b: 1800, h: 976,
+        tekst: 'Samme balkonger sett fra syd, langs gaten. De er like brede som vindusfeltet over inngangen. Målene er anslag.',
+        altFor: 'Fasaden i dag, sett fra syd langs gaten, med balkongene på hjørnet og busker foran.',
+        altEtter: 'Skisse av fasaden sett fra syd med tre nye balkonger mot gaten over inngangen.'
       },
       {
         id: 'vaskerom', gruppe: 'Inne', knapp: 'Vaskerom', tittel: 'Vaskerom', b: 1800, h: 1208,
@@ -271,10 +290,12 @@
     var sisteValg = 0;
     var gjeldende = null;
     var PAR = [
-      { id: 'ved', tekst: 'Bytt tørkerom og vedbod', start: 'verksted',
+      { id: 'ved', tekst: 'Bytt tørkerom og vedbod',
         vanlig: 'Nå: verksted i tørkerommet, ved i vedboden', byttet: 'Nå: ved i tørkerommet, verksted i vedboden' },
-      { id: 'vask', tekst: 'Bytt vaskerom og fyrrom', start: 'vaskerom',
-        vanlig: 'Nå: vaskeri i vaskerommet, beredskap i fyrrommet', byttet: 'Nå: beredskap i vaskerommet, vaskeri i fyrrommet' }
+      { id: 'vask', tekst: 'Bytt vaskerom og fyrrom',
+        vanlig: 'Nå: vaskeri i vaskerommet, beredskap i fyrrommet', byttet: 'Nå: beredskap i vaskerommet, vaskeri i fyrrommet' },
+      { id: 'balkong', tekst: 'Vis balkonger', merkelapp: 'Balkonger: ikke bestemt',
+        vanlig: 'Nå: uten balkonger', byttet: 'Nå: med balkonger' }
     ];
     var byttet = {};
     (new URLSearchParams(location.search).get('byttet') || '').split(',').forEach(function (id) {
@@ -300,6 +321,13 @@
       });
     }
 
+    // Bare bryteren som gjelder bildet man ser, er synlig
+    function visAktuellBryter(rom) {
+      var par = rom.bytte ? rom.bytte.par : null;
+      PAR.forEach(function (p) { brytere[p.id].hidden = p.id !== par; });
+      bryterRad.hidden = !par;
+    }
+
     function settPosisjon(prosent) {
       var p = Math.max(0, Math.min(100, prosent));
       scene.style.setProperty('--pos', p + '%');
@@ -321,6 +349,12 @@
       var valg = ++sisteValg;
       var vis = visning(rom);
       gjeldende = rom;
+      visAktuellBryter(rom);
+      var valgtKnapp = knapper[rom.id];
+      if (valgtKnapp) {
+        var knappRad = valgtKnapp.parentNode;
+        knappRad.scrollLeft = valgtKnapp.offsetLeft - knappRad.offsetLeft - (knappRad.clientWidth - valgtKnapp.offsetWidth) / 2;
+      }
       Object.keys(knapper).forEach(function (k) {
         if (k === rom.id) knapper[k].setAttribute('aria-current', 'true');
         else knapper[k].removeAttribute('aria-current');
@@ -338,7 +372,7 @@
         bildeEtter.src = etterKilde(rom);
         bildeEtter.alt = vis.altEtter;
         document.getElementById('merkelapp-etter').textContent =
-          erByttet(rom) ? 'Byttet om: skisse, ikke bestemt' : 'Skisse, ikke bestemt';
+          erByttet(rom) ? (PAR.filter(function (p) { return p.id === rom.bytte.par; })[0].merkelapp || 'Byttet om: ikke bestemt') : 'Skisse, ikke bestemt';
         if (!beholdPosisjon) settPosisjon(50);
       });
     }
@@ -369,7 +403,7 @@
       romvalg.appendChild(gruppe);
     });
 
-    // Brytere: viser to rom med motsatt funksjon. Står du i et annet rom, hopper siden til det første i paret.
+    // Brytere: bytter mellom skissen og et alternativ for samme bilde
     var bryterRad = document.createElement('div');
     bryterRad.className = 'brytere';
     PAR.forEach(function (p) {
@@ -390,9 +424,9 @@
       knapp.addEventListener('click', function () {
         byttet[p.id] = !byttet[p.id];
         oppdaterBrytere();
-        var iParet = gjeldende.bytte && gjeldende.bytte.par === p.id;
-        if (byttet[p.id] && !iParet) visRom(p.start, true);
-        else visRom(gjeldende.id, true, true);
+        visRom(gjeldende.id, true, true);
+        // Balkongen ligger i venstre del av bildet, så streken må flyttes for at den skal synes
+        if (p.id === 'balkong') settPosisjon(byttet[p.id] ? 12 : 50);
       });
       brytere[p.id] = knapp;
       bryterRad.appendChild(knapp);
